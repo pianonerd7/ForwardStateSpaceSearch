@@ -50,6 +50,7 @@ public class GameState implements Comparable<GameState> {
 	 */
 	public GameState(State.StateView state, int playernum, int requiredGold, int requiredWood, boolean buildPeasants) {
 		// TODO: Implement me!
+
 	}
 
 	/**
