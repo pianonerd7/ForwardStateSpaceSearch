@@ -116,7 +116,7 @@ public class GameState implements Comparable<GameState> {
 	@Override
 	public int compareTo(GameState o) {
 		// TODO: Implement me!
-		return 0;
+		return new Double(this.getCost()).compareTo(o.getCost());
 	}
 
 	/**

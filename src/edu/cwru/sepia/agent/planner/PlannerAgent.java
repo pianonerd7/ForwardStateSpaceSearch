@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Stack;
 
@@ -98,8 +100,53 @@ public class PlannerAgent extends Agent {
 	 * @return The plan or null if no plan is found.
 	 */
 	private Stack<StripsAction> AstarSearch(GameState startState) {
-		// TODO: Implement me!
+
+		ArrayList<GameState> openList = new ArrayList<GameState>();
+		ArrayList<GameState> closedList = new ArrayList<GameState>();
+
+		openList.add(startState);
+
+		while (!openList.isEmpty()) {
+			Collections.sort(openList);
+
+			GameState curState = openList.get(0);
+			openList.remove(0);
+
+			for (GameState child : curState.generateChildren()) {
+				if (curState.isGoal()) {
+					System.out.println("PATH FOUND \n");
+				}
+
+				if (canAddToOpenList(child, openList, closedList)) {
+					openList.add(child);
+				}
+			}
+			closedList.add(curState);
+		}
+		System.exit(0);
 		return null;
+	}
+
+	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList,
+			ArrayList<GameState> closedList) {
+
+		boolean toAdd = true;
+
+		for (GameState node : openList) {
+			// If the two nodes are identical, and the one already in open list
+			// has lower cost, ignore
+			if (neighbor.equals(node) && node.getCost() < neighbor.getCost()) {
+				toAdd = false;
+			}
+		}
+
+		for (GameState node : closedList) {
+			if (neighbor.equals(node) && node.getCost() < neighbor.getCost()) {
+				toAdd = false;
+			}
+		}
+
+		return toAdd;
 	}
 
 	/**
