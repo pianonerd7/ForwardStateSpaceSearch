@@ -2,6 +2,7 @@ package edu.cwru.sepia.agent.planner;
 
 import java.util.List;
 
+import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.state.State;
 
 /**
@@ -25,6 +26,11 @@ import edu.cwru.sepia.environment.model.state.State;
  * in this class using whatever class/structure you use to represent actions.
  */
 public class GameState implements Comparable<GameState> {
+
+	// The Action done to get to this state
+	StripsAction parentAction = null;
+	// The state of the parent prior to the parent Action
+	GameState parentState = null;
 
 	/**
 	 * Construct a GameState from a stateview object. This is used to construct

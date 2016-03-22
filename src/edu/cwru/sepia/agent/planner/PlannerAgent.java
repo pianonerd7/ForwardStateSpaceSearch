@@ -115,6 +115,7 @@ public class PlannerAgent extends Agent {
 			for (GameState child : curState.generateChildren()) {
 				if (curState.isGoal()) {
 					System.out.println("PATH FOUND \n");
+					return getPath(child);
 				}
 
 				if (canAddToOpenList(child, openList, closedList)) {
@@ -147,6 +148,18 @@ public class PlannerAgent extends Agent {
 		}
 
 		return toAdd;
+	}
+
+	private Stack<StripsAction> getPath(GameState child) {
+
+		Stack<StripsAction> actions = new Stack<StripsAction>();
+
+		while (child != null) {
+			actions.add(child.parentAction);
+			child = child.parentState;
+		}
+
+		return actions;
 	}
 
 	/**
