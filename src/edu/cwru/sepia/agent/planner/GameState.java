@@ -1,8 +1,10 @@
 package edu.cwru.sepia.agent.planner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
+import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.State;
 
 /**
@@ -32,6 +34,19 @@ public class GameState implements Comparable<GameState> {
 	// The state of the parent prior to the parent Action
 	GameState parentState = null;
 
+	Peasant peasant;
+	ArrayList<Forest> forests;
+	ArrayList<GoldMine> goldMines;
+	TownHall townHall;
+
+	int goalWood;
+	int goalGold;
+	int myWood = 0;
+	int myGold = 0;
+
+	int playerNum;
+	State.StateView state;
+
 	/**
 	 * Construct a GameState from a stateview object. This is used to construct
 	 * the initial search node. All other nodes should be constructed from the
@@ -49,7 +64,23 @@ public class GameState implements Comparable<GameState> {
 	 *            True if the BuildPeasant action should be considered
 	 */
 	public GameState(State.StateView state, int playernum, int requiredGold, int requiredWood, boolean buildPeasants) {
-		// TODO: Implement me!
+
+		this.state = state;
+		this.playerNum = playernum;
+		this.goalWood = requiredWood;
+		this.goalGold = requiredGold;
+
+		forests = new ArrayList<Forest>();
+		goldMines = new ArrayList<GoldMine>();
+
+		for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
+
+			if (resource.getType().toString().equals("TREE")) {
+				forests.add(new Forest(false, resource.getAmountRemaining()));
+			} else if (resource.getType().toString().equals("GOLD_MINE")) {
+				goldMines.add(new GoldMine(false, resource.getAmountRemaining()));
+			}
+		}
 
 	}
 
