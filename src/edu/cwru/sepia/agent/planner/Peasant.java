@@ -1,6 +1,7 @@
 package edu.cwru.sepia.agent.planner;
 
 import edu.cwru.sepia.environment.model.state.ResourceType;
+import edu.cwru.sepia.environment.model.state.Unit;
 
 public class Peasant extends MapObject {
 
@@ -9,51 +10,67 @@ public class Peasant extends MapObject {
 	private boolean isNextToGoldMine;
 	private boolean isNextToForest;
 	private boolean isNextToTownHall;
+	private Unit.UnitView unit;
 
-	public Peasant(ResourceType object, int quantity) {
+	public Peasant(ResourceType object, int quantity, Unit.UnitView unit) {
+
 		super(true);
+
+		if (quantity > 0) {
+			super.setIsEmpty(false);
+		}
 
 		holdingObject = object;
 		this.resourceQuantity = quantity;
+		this.unit = unit;
 	}
 
-	public void setResourceType(ResourceType type) {
-		this.holdingObject = type;
-	}
-
-	public ResourceType getResourceType() {
+	public ResourceType getHoldingObject() {
 		return holdingObject;
 	}
 
-	public void setResourceQuantity(int newQuantity) {
-		this.resourceQuantity = newQuantity;
+	public void setHoldingObject(ResourceType holdingObject) {
+		this.holdingObject = holdingObject;
 	}
 
 	public int getResourceQuantity() {
 		return resourceQuantity;
 	}
 
-	private void setIsNextToGoldMine(boolean newVal) {
-		this.isNextToGoldMine = newVal;
+	public void setResourceQuantity(int resourceQuantity) {
+		this.resourceQuantity = resourceQuantity;
 	}
 
-	private boolean getIsNextToGoldMine() {
+	public boolean isNextToGoldMine() {
 		return isNextToGoldMine;
 	}
 
-	private void setIsNextToForest(boolean newVal) {
-		this.isNextToForest = newVal;
+	public void setNextToGoldMine(boolean isNextToGoldMine) {
+		this.isNextToGoldMine = isNextToGoldMine;
 	}
 
-	private boolean getIsNextToForest() {
+	public boolean isNextToForest() {
 		return isNextToForest;
 	}
 
-	private void setIsNextToTownHall(boolean newVal) {
-		this.isNextToTownHall = newVal;
+	public void setNextToForest(boolean isNextToForest) {
+		this.isNextToForest = isNextToForest;
 	}
 
-	private boolean getIsNextToTownHall() {
+	public boolean isNextToTownHall() {
 		return isNextToTownHall;
 	}
+
+	public void setNextToTownHall(boolean isNextToTownHall) {
+		this.isNextToTownHall = isNextToTownHall;
+	}
+
+	public Unit.UnitView getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit.UnitView unit) {
+		this.unit = unit;
+	}
+
 }

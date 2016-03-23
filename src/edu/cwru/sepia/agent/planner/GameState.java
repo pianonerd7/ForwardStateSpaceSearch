@@ -6,6 +6,7 @@ import java.util.List;
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.State;
+import edu.cwru.sepia.environment.model.state.Unit;
 
 /**
  * This class is used to represent the state of the game after applying one of
@@ -76,12 +77,19 @@ public class GameState implements Comparable<GameState> {
 		for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
 
 			if (resource.getType().toString().equals("TREE")) {
-				forests.add(new Forest(false, resource.getAmountRemaining()));
+				forests.add(new Forest(false, resource.getAmountRemaining(), resource));
 			} else if (resource.getType().toString().equals("GOLD_MINE")) {
-				goldMines.add(new GoldMine(false, resource.getAmountRemaining()));
+				goldMines.add(new GoldMine(false, resource.getAmountRemaining(), resource));
 			}
 		}
 
+		this.peasant = new Peasant(null, 0, state.getUnit(playernum));
+
+		for (Unit.UnitView unit : state.getAllUnits()) {
+			if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
+				this.townHall = new TownHall(true, unit);
+			}
+		}
 	}
 
 	/**
