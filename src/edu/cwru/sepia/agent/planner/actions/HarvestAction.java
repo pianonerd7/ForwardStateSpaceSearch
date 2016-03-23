@@ -3,21 +3,17 @@ package edu.cwru.sepia.agent.planner.actions;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.Peasant;
 
-public class MoveAction implements StripsAction {
+public class HarvestAction implements StripsAction {
 
 	private Peasant peasant;
 
-	public MoveAction(Peasant peasant) {
+	public HarvestAction(Peasant peasant) {
 		this.peasant = peasant;
 	}
 
-	/**
-	 * You should always be able to move. It may not be the move with the
-	 * highest utility, but you always have the option to
-	 */
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		return true;
+		return (peasant.isNextToGoldMine() || peasant.isNextToForest()) && peasant.getIsEmpty();
 	}
 
 	@Override
