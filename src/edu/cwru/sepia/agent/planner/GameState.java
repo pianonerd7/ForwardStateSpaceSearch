@@ -3,6 +3,9 @@ package edu.cwru.sepia.agent.planner;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cwru.sepia.agent.planner.actions.DepositAction;
+import edu.cwru.sepia.agent.planner.actions.HarvestAction;
+import edu.cwru.sepia.agent.planner.actions.MoveAction;
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.State;
@@ -104,8 +107,7 @@ public class GameState implements Comparable<GameState> {
 	 *         state.
 	 */
 	public boolean isGoal() {
-		// TODO: Implement me!
-		return false;
+		return myWood >= goalWood && myGold >= goalGold;
 	}
 
 	/**
@@ -117,8 +119,21 @@ public class GameState implements Comparable<GameState> {
 	 *         actions
 	 */
 	public List<GameState> generateChildren() {
-		// TODO: Implement me!
-		return null;
+
+		List<GameState> children = new ArrayList<GameState>();
+
+		HarvestAction harvest = new HarvestAction(this.peasant);
+		DepositAction deposit = new DepositAction(this.peasant);
+		MoveAction move = new MoveAction(this.peasant);
+
+		if (harvest.preconditionsMet(this)) {
+			children.add(harvest.apply(this));
+		}
+		if (deposit.preconditionsMet(this)) {
+			children.add(deposit.apply(this));
+		}
+
+		return children;
 	}
 
 	/**
