@@ -26,7 +26,9 @@ public class MoveAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
-		GameState newState = new GameState();
+		GameState newState = new GameState(this, state, state.getPeasant(), state.getForests(), state.getGoldMines(),
+				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
+				state.getPlayerNum(), state.getState());
 
 		return newState;
 	}

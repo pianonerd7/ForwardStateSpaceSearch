@@ -34,22 +34,22 @@ import edu.cwru.sepia.environment.model.state.Unit;
 public class GameState implements Comparable<GameState> {
 
 	// The Action done to get to this state
-	StripsAction parentAction = null;
+	private StripsAction parentAction = null;
 	// The state of the parent prior to the parent Action
-	GameState parentState = null;
+	private GameState parentState = null;
 
-	Peasant peasant;
-	ArrayList<Forest> forests;
-	ArrayList<GoldMine> goldMines;
-	TownHall townHall;
+	private Peasant peasant;
+	private ArrayList<Forest> forests;
+	private ArrayList<GoldMine> goldMines;
+	private TownHall townHall;
 
-	int goalWood;
-	int goalGold;
-	int myWood = 0;
-	int myGold = 0;
+	private int goalWood;
+	private int goalGold;
+	private int myWood = 0;
+	private int myGold = 0;
 
-	int playerNum;
-	State.StateView state;
+	private int playerNum;
+	private State.StateView state;
 
 	/**
 	 * Construct a GameState from a stateview object. This is used to construct
@@ -262,4 +262,101 @@ public class GameState implements Comparable<GameState> {
 		// TODO: Implement me!
 		return 0;
 	}
+
+	public StripsAction getParentAction() {
+		return parentAction;
+	}
+
+	public void setParentAction(StripsAction parentAction) {
+		this.parentAction = parentAction;
+	}
+
+	public GameState getParentState() {
+		return parentState;
+	}
+
+	public void setParentState(GameState parentState) {
+		this.parentState = parentState;
+	}
+
+	public Peasant getPeasant() {
+		return peasant;
+	}
+
+	public void setPeasant(Peasant peasant) {
+		this.peasant = peasant;
+	}
+
+	public ArrayList<Forest> getForests() {
+		return forests;
+	}
+
+	public void setForests(ArrayList<Forest> forests) {
+		this.forests = forests;
+	}
+
+	public ArrayList<GoldMine> getGoldMines() {
+		return goldMines;
+	}
+
+	public void setGoldMines(ArrayList<GoldMine> goldMines) {
+		this.goldMines = goldMines;
+	}
+
+	public TownHall getTownHall() {
+		return townHall;
+	}
+
+	public void setTownHall(TownHall townHall) {
+		this.townHall = townHall;
+	}
+
+	public int getGoalWood() {
+		return goalWood;
+	}
+
+	public void setGoalWood(int goalWood) {
+		this.goalWood = goalWood;
+	}
+
+	public int getGoalGold() {
+		return goalGold;
+	}
+
+	public void setGoalGold(int goalGold) {
+		this.goalGold = goalGold;
+	}
+
+	public int getMyWood() {
+		return myWood;
+	}
+
+	public void setMyWood(int myWood) {
+		this.myWood = myWood;
+	}
+
+	public int getMyGold() {
+		return myGold;
+	}
+
+	public void setMyGold(int myGold) {
+		this.myGold = myGold;
+	}
+
+	public int getPlayerNum() {
+		return playerNum;
+	}
+
+	public void setPlayerNum(int playerNum) {
+		this.playerNum = playerNum;
+	}
+
+	public State.StateView getState() {
+		return state;
+	}
+
+	public void setState(State.StateView state) {
+		this.state = state;
+	}
+
 }
