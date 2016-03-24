@@ -98,8 +98,22 @@ public class GameState implements Comparable<GameState> {
 		}
 	}
 
-	public GameState() {
+	public GameState(StripsAction parentAction, GameState parentState, Peasant peasant, ArrayList<Forest> forests,
+			ArrayList<GoldMine> goldMines, TownHall townHall, int goalWood, int goalGold, int myWood, int myGold,
+			int playerNum, State.StateView state) {
 
+		this.parentAction = parentAction;
+		this.parentState = parentState;
+		this.peasant = peasant;
+		this.forests = forests;
+		this.goldMines = goldMines;
+		this.townHall = townHall;
+		this.goalWood = goalWood;
+		this.goalGold = goalGold;
+		this.myWood = myWood;
+		this.myGold = myGold;
+		this.playerNum = playerNum;
+		this.state = state;
 	}
 
 	/**

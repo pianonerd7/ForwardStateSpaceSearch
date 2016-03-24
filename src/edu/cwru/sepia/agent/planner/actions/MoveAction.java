@@ -25,8 +25,10 @@ public class MoveAction implements StripsAction {
 
 	@Override
 	public GameState apply(GameState state) {
-		// TODO Auto-generated method stub
-		return null;
+
+		GameState newState = new GameState();
+
+		return newState;
 	}
 
 	@Override
