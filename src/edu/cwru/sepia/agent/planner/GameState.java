@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
 import edu.cwru.sepia.agent.planner.actions.HarvestAction;
+import edu.cwru.sepia.agent.planner.actions.MoveAction;
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.State;
@@ -79,20 +80,26 @@ public class GameState implements Comparable<GameState> {
 		for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
 
 			if (resource.getType().toString().equals("TREE")) {
-				forests.add(new Forest(false, resource.getAmountRemaining(), resource));
+				forests.add(new Forest(false, resource.getAmountRemaining(), resource,
+						new Position(resource.getXPosition(), resource.getYPosition())));
 			} else if (resource.getType().toString().equals("GOLD_MINE")) {
-				goldMines.add(new GoldMine(false, resource.getAmountRemaining(), resource));
+				goldMines.add(new GoldMine(false, resource.getAmountRemaining(), resource,
+						new Position(resource.getXPosition(), resource.getYPosition())));
 			}
 		}
 
 		for (Unit.UnitView unit : state.getAllUnits()) {
 			if (unit.getTemplateView().getName().toLowerCase().equals("peasant")) {
-				this.peasant = new Peasant(null, 0, unit);
+				this.peasant = new Peasant(null, 0, unit, new Position(unit.getXPosition(), unit.getYPosition()));
 			}
 			if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
-				this.townHall = new TownHall(true, unit);
+				this.townHall = new TownHall(true, unit, new Position(unit.getXPosition(), unit.getYPosition()));
 			}
 		}
+	}
+
+	public GameState() {
+
 	}
 
 	/**
@@ -121,38 +128,50 @@ public class GameState implements Comparable<GameState> {
 
 		List<GameState> children = new ArrayList<GameState>();
 
+		// If peasant isn't holding anything, it should move to a resource, or
+		// harvest at a resource
 		if (peasant.getIsEmpty()) {
-			for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
+			for (Forest forest : forests) {
+				HarvestAction harvest = new HarvestAction(this.peasant, forest);
 
-				if (resource.getType().toString().equals("TREE")) {
+				if (harvest.preconditionsMet(this)) {
+					children.add(harvest.apply(this));
+				}
 
-					HarvestAction harvest = new HarvestAction(this.peasant, resource);
-
-					if (harvest.preconditionsMet(this)) {
-						children.add(harvest.apply(this));
-					}
-				} else if (resource.getType().toString().equals("GOLD_MINE")) {
-
-					HarvestAction harvest = new HarvestAction(this.peasant, resource);
-
-					if (harvest.preconditionsMet(this)) {
-						children.add(harvest.apply(this));
-					}
+				if (parentAction == null || parentAction.getAction() != "MOVE") {
+					MoveAction move = new MoveAction(this.peasant, forest);
+					children.add(move.apply(this));
 				}
 			}
+
+			for (GoldMine goldmine : goldMines) {
+				HarvestAction harvest = new HarvestAction(this.peasant, goldmine);
+
+				if (harvest.preconditionsMet(this)) {
+					children.add(harvest.apply(this));
+				}
+
+				if (parentAction == null || parentAction.getAction() != "MOVE") {
+					MoveAction move = new MoveAction(this.peasant, goldmine);
+					children.add(move.apply(this));
+				}
+			}
+
 		}
 
+		// If a peasant is holding something, it should move towards the
+		// TownHall, or deposit at TownHall
 		if (!peasant.getIsEmpty()) {
-			for (Unit.UnitView unit : state.getAllUnits()) {
 
-				if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
+			DepositAction deposit = new DepositAction(this.peasant);
 
-					DepositAction deposit = new DepositAction(this.peasant);
+			if (deposit.preconditionsMet(this)) {
+				children.add(deposit.apply(this));
+			}
 
-					if (deposit.preconditionsMet(this)) {
-						children.add(deposit.apply(this));
-					}
-				}
+			if (parentAction == null || parentAction.getAction() != "MOVE") {
+				MoveAction move = new MoveAction(this.peasant, this.townHall);
+				children.add(move.apply(this));
 			}
 		}
 

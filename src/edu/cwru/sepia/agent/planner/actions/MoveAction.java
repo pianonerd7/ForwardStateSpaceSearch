@@ -1,24 +1,17 @@
 package edu.cwru.sepia.agent.planner.actions;
 
 import edu.cwru.sepia.agent.planner.GameState;
+import edu.cwru.sepia.agent.planner.MapObject;
 import edu.cwru.sepia.agent.planner.Peasant;
-import edu.cwru.sepia.environment.model.state.ResourceNode;
-import edu.cwru.sepia.environment.model.state.Unit;
 
 public class MoveAction implements StripsAction {
 
 	private Peasant peasant;
-	private Unit.UnitView townHall;
-	private ResourceNode.ResourceView resource;
+	private MapObject mapObject;
 
-	public MoveAction(Peasant peasant, Unit.UnitView townHall) {
+	public MoveAction(Peasant peasant, MapObject mapObject) {
 		this.peasant = peasant;
-		this.townHall = townHall;
-	}
-
-	public MoveAction(Peasant peasant, ResourceNode.ResourceView resource) {
-		this.peasant = peasant;
-		this.resource = resource;
+		this.mapObject = mapObject;
 	}
 
 	/**
@@ -34,6 +27,11 @@ public class MoveAction implements StripsAction {
 	public GameState apply(GameState state) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getAction() {
+		return "MOVE";
 	}
 
 }

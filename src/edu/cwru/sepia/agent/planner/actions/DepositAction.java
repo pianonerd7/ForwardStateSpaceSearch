@@ -22,4 +22,8 @@ public class DepositAction implements StripsAction {
 		return null;
 	}
 
+	@Override
+	public String getAction() {
+		return "DEPOSIT";
+	}
 }

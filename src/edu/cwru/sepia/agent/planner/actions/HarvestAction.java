@@ -1,15 +1,15 @@
 package edu.cwru.sepia.agent.planner.actions;
 
 import edu.cwru.sepia.agent.planner.GameState;
+import edu.cwru.sepia.agent.planner.MapObject;
 import edu.cwru.sepia.agent.planner.Peasant;
-import edu.cwru.sepia.environment.model.state.ResourceNode;
 
 public class HarvestAction implements StripsAction {
 
 	private Peasant peasant;
-	private ResourceNode.ResourceView resource;
+	private MapObject resource;
 
-	public HarvestAction(Peasant peasant, ResourceNode.ResourceView resource) {
+	public HarvestAction(Peasant peasant, MapObject resource) {
 		this.peasant = peasant;
 		this.resource = resource;
 	}
@@ -23,6 +23,11 @@ public class HarvestAction implements StripsAction {
 	public GameState apply(GameState state) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getAction() {
+		return "HARVEST";
 	}
 
 }
