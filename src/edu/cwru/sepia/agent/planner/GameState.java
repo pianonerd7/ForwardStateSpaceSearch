@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
 import edu.cwru.sepia.agent.planner.actions.HarvestAction;
-import edu.cwru.sepia.agent.planner.actions.MoveAction;
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.State;
@@ -122,15 +121,39 @@ public class GameState implements Comparable<GameState> {
 
 		List<GameState> children = new ArrayList<GameState>();
 
-		HarvestAction harvest = new HarvestAction(this.peasant);
-		DepositAction deposit = new DepositAction(this.peasant);
-		MoveAction move = new MoveAction(this.peasant);
+		if (peasant.getIsEmpty()) {
+			for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
 
-		if (harvest.preconditionsMet(this)) {
-			children.add(harvest.apply(this));
+				if (resource.getType().toString().equals("TREE")) {
+
+					HarvestAction harvest = new HarvestAction(this.peasant, resource);
+
+					if (harvest.preconditionsMet(this)) {
+						children.add(harvest.apply(this));
+					}
+				} else if (resource.getType().toString().equals("GOLD_MINE")) {
+
+					HarvestAction harvest = new HarvestAction(this.peasant, resource);
+
+					if (harvest.preconditionsMet(this)) {
+						children.add(harvest.apply(this));
+					}
+				}
+			}
 		}
-		if (deposit.preconditionsMet(this)) {
-			children.add(deposit.apply(this));
+
+		if (!peasant.getIsEmpty()) {
+			for (Unit.UnitView unit : state.getAllUnits()) {
+
+				if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
+
+					DepositAction deposit = new DepositAction(this.peasant);
+
+					if (deposit.preconditionsMet(this)) {
+						children.add(deposit.apply(this));
+					}
+				}
+			}
 		}
 
 		return children;
