@@ -42,7 +42,6 @@ public class PEAgent extends Agent {
 		super(playernum);
 		peasantIdMap = new HashMap<Integer, Integer>();
 		this.plan = plan;
-
 	}
 
 	@Override
@@ -108,8 +107,6 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
 
-		Stack<StripsAction> curPlan = this.plan;
-
 		Map<Integer, ActionResult> lastAction = historyView.getCommandFeedback(playernum,
 				stateView.getTurnNumber() - 1);
 
@@ -118,8 +115,8 @@ public class PEAgent extends Agent {
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 		int peasantID = -1;
 
-		if (!curPlan.empty()) {
-			StripsAction stripsAction = curPlan.pop();
+		if (!this.plan.empty()) {
+			StripsAction stripsAction = this.plan.pop();
 			peasantID = getPeasantID(stripsAction);
 
 			if (lastAction.get(peasantID) != null) {
@@ -127,7 +124,7 @@ public class PEAgent extends Agent {
 			}
 
 			if (!isPrevActionComplete) {
-				curPlan.push(stripsAction);
+				this.plan.push(stripsAction);
 				return null;
 			}
 
