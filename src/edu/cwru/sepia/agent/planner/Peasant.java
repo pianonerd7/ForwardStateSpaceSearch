@@ -11,11 +11,10 @@ public class Peasant extends MapObject {
 	private boolean isNextToForest;
 	private boolean isNextToTownHall;
 	private Unit.UnitView unit;
-	private Position position;
 
 	public Peasant(ResourceType object, int quantity, Unit.UnitView unit, Position pos) {
 
-		super(true);
+		super(true, "PEASANT", pos);
 
 		if (quantity > 0) {
 			super.setIsEmpty(false);
@@ -24,7 +23,6 @@ public class Peasant extends MapObject {
 		holdingObject = object;
 		this.resourceQuantity = quantity;
 		this.unit = unit;
-		this.position = pos;
 	}
 
 	public ResourceType getHoldingObject() {
@@ -75,12 +73,10 @@ public class Peasant extends MapObject {
 		this.unit = unit;
 	}
 
-	public Position getPosition() {
-		return position;
-	}
-
-	public void setPosition(Position position) {
-		this.position = position;
+	public void resetNextTo() {
+		isNextToGoldMine = false;
+		isNextToForest = false;
+		isNextToTownHall = false;
 	}
 
 }

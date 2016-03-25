@@ -153,7 +153,7 @@ public class GameState implements Comparable<GameState> {
 				}
 
 				if (parentAction == null || parentAction.getAction() != "MOVE") {
-					MoveAction move = new MoveAction(this.peasant, forest);
+					MoveAction move = new MoveAction(this.peasant, forest, forest.getPosition());
 					children.add(move.apply(this));
 				}
 			}
@@ -166,7 +166,7 @@ public class GameState implements Comparable<GameState> {
 				}
 
 				if (parentAction == null || parentAction.getAction() != "MOVE") {
-					MoveAction move = new MoveAction(this.peasant, goldmine);
+					MoveAction move = new MoveAction(this.peasant, goldmine, goldmine.getPosition());
 					children.add(move.apply(this));
 				}
 			}
@@ -184,7 +184,7 @@ public class GameState implements Comparable<GameState> {
 			}
 
 			if (parentAction == null || parentAction.getAction() != "MOVE") {
-				MoveAction move = new MoveAction(this.peasant, this.townHall);
+				MoveAction move = new MoveAction(this.peasant, this.townHall, townHall.getPosition());
 				children.add(move.apply(this));
 			}
 		}

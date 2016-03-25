@@ -155,8 +155,8 @@ public class PlannerAgent extends Agent {
 		Stack<StripsAction> actions = new Stack<StripsAction>();
 
 		while (child != null) {
-			actions.add(child.parentAction);
-			child = child.parentState;
+			actions.add(child.getParentAction());
+			child = child.getParentState();
 		}
 
 		return actions;

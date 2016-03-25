@@ -3,15 +3,18 @@ package edu.cwru.sepia.agent.planner.actions;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.MapObject;
 import edu.cwru.sepia.agent.planner.Peasant;
+import edu.cwru.sepia.agent.planner.Position;
 
 public class MoveAction implements StripsAction {
 
 	private Peasant peasant;
 	private MapObject mapObject;
+	private Position moveToThisLocation;
 
-	public MoveAction(Peasant peasant, MapObject mapObject) {
+	public MoveAction(Peasant peasant, MapObject mapObject, Position newPos) {
 		this.peasant = peasant;
 		this.mapObject = mapObject;
+		this.moveToThisLocation = newPos;
 	}
 
 	/**
@@ -29,6 +32,20 @@ public class MoveAction implements StripsAction {
 		GameState newState = new GameState(this, state, state.getPeasant(), state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState());
+
+		newState.getPeasant().setPosition(moveToThisLocation);
+		newState.getPeasant().resetNextTo();
+
+		String type = mapObject.getName();
+
+		switch (type) {
+		case "FOREST":
+			newState.getPeasant().setNextToForest(true);
+		case "GOLDMINE":
+			newState.getPeasant().setNextToGoldMine(true);
+		case "TOWNHALL":
+			newState.getPeasant().setNextToTownHall(true);
+		}
 
 		return newState;
 	}
