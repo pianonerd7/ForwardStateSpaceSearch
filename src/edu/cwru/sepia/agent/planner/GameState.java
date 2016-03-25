@@ -206,8 +206,23 @@ public class GameState implements Comparable<GameState> {
 	 *         this state.
 	 */
 	public double heuristic() {
-		// TODO: Implement me!
-		return 0.0;
+		int heuristic = 0;
+
+		// int peasantHoldingQuantity = peasant.getResourceQuantity();
+
+		switch (parentAction.getAction()) {
+		case "MOVE":
+			heuristic += 3;
+			break;
+		case "HARVEST":
+			heuristic += 4;
+			break;
+		case "DEPOSIT":
+			heuristic += 5;
+			break;
+		}
+		heuristic += this.myGold + this.myWood;
+		return heuristic;
 	}
 
 	/**
