@@ -8,6 +8,9 @@ import java.util.Stack;
 
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.Agent;
+import edu.cwru.sepia.agent.planner.actions.DepositAction;
+import edu.cwru.sepia.agent.planner.actions.HarvestAction;
+import edu.cwru.sepia.agent.planner.actions.MoveAction;
 import edu.cwru.sepia.agent.planner.actions.StripsAction;
 import edu.cwru.sepia.environment.model.history.History;
 import edu.cwru.sepia.environment.model.state.State;
@@ -21,7 +24,7 @@ import edu.cwru.sepia.environment.model.state.Unit;
 public class PEAgent extends Agent {
 
 	// The plan being executed
-	private Stack<StripsAction> plan = null;
+	private Stack<StripsAction> plan = new Stack<StripsAction>();
 
 	// maps the real unit Ids to the plan's unit ids
 	// when you're planning you won't know the true unit IDs that sepia assigns.
@@ -30,6 +33,8 @@ public class PEAgent extends Agent {
 	private Map<Integer, Integer> peasantIdMap;
 	private int townhallId;
 	private int peasantTemplateId;
+
+	private Unit.UnitView townHall;
 
 	public PEAgent(int playernum, Stack<StripsAction> plan) {
 		super(playernum);
@@ -46,6 +51,7 @@ public class PEAgent extends Agent {
 			String unitType = unit.getTemplateView().getName().toLowerCase();
 			if (unitType.equals("townhall")) {
 				townhallId = unitId;
+				townHall = stateView.getUnit(unitId);
 			} else if (unitType.equals("peasant")) {
 				peasantIdMap.put(unitId, unitId);
 			}
@@ -99,10 +105,40 @@ public class PEAgent extends Agent {
 	 */
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
-		// TODO: Implement me!
 
-		// integer is the id of the unit, and action is the action
-		return null;
+		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
+
+		while (!plan.isEmpty()) {
+			StripsAction test = this.plan.peek();
+			StripsAction stripsAction = this.plan.pop();
+
+			switch (stripsAction.getAction()) {
+			case "MOVE":
+				MoveAction move = (MoveAction) stripsAction;
+				Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
+						move.getBestPosition().y);
+
+				sepiaAction.put(move.getPeasant().getUnitID(), moveAction);
+				break;
+			case "HARVEST":
+				HarvestAction harvest = (HarvestAction) stripsAction;
+				Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
+						harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
+
+				sepiaAction.put(harvest.getPeasant().getUnitID(), harvestAction);
+				break;
+			case "DEPOSIT":
+				DepositAction deposit = (DepositAction) stripsAction;
+				Action depositAction = Action.createPrimitiveDeposit(deposit.getPeasant().getUnitID(),
+						deposit.getPeasant().getPosition().getDirection(
+								new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
+
+				sepiaAction.put(deposit.getPeasant().getUnitID(), depositAction);
+				break;
+			}
+		}
+
+		return sepiaAction;
 	}
 
 	/**

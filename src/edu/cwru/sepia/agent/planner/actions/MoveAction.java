@@ -10,6 +10,7 @@ public class MoveAction implements StripsAction {
 	private Peasant peasant;
 	private MapObject mapObject;
 	private Position moveToThisLocation;
+	private Position bestPosition = null;
 
 	public MoveAction(Peasant peasant, MapObject mapObject, Position newPos) {
 		this.peasant = peasant;
@@ -42,10 +43,13 @@ public class MoveAction implements StripsAction {
 			}
 		}
 
+		this.bestPosition = bestNeighbor;
+
 		// only need to clone peasant because that's the only thing changing
 		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
 				state.getPeasant().getResourceQuantity(),
-				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y),
+				state.getPeasant().getUnitID());
 		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
 		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
 		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
@@ -72,6 +76,18 @@ public class MoveAction implements StripsAction {
 		}
 
 		return newState;
+	}
+
+	public Peasant getPeasant() {
+		return peasant;
+	}
+
+	public void setPeasant(Peasant peasant) {
+		this.peasant = peasant;
+	}
+
+	public Position getBestPosition() {
+		return bestPosition;
 	}
 
 	@Override

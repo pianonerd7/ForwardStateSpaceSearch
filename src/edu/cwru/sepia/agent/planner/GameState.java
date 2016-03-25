@@ -92,7 +92,8 @@ public class GameState implements Comparable<GameState> {
 
 		for (Unit.UnitView unit : state.getAllUnits()) {
 			if (unit.getTemplateView().getName().toLowerCase().equals("peasant")) {
-				this.peasant = new Peasant(null, 0, new Position(unit.getXPosition(), unit.getYPosition()));
+				this.peasant = new Peasant(null, 0, new Position(unit.getXPosition(), unit.getYPosition()),
+						unit.getID());
 			}
 			if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
 				this.townHall = new TownHall(true, unit, new Position(unit.getXPosition(), unit.getYPosition()));

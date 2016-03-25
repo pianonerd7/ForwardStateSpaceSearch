@@ -31,7 +31,8 @@ public class HarvestAction implements StripsAction {
 
 		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
 				state.getPeasant().getResourceQuantity(),
-				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y),
+				state.getPeasant().getUnitID());
 		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
 		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
 		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
@@ -105,6 +106,22 @@ public class HarvestAction implements StripsAction {
 		}
 
 		return newState;
+	}
+
+	public Peasant getPeasant() {
+		return peasant;
+	}
+
+	public void setPeasant(Peasant peasant) {
+		this.peasant = peasant;
+	}
+
+	public MapObject getResource() {
+		return resource;
+	}
+
+	public void setResource(MapObject resource) {
+		this.resource = resource;
 	}
 
 	@Override

@@ -9,8 +9,9 @@ public class Peasant extends MapObject {
 	private boolean isNextToGoldMine;
 	private boolean isNextToForest;
 	private boolean isNextToTownHall;
+	private int unitID;
 
-	public Peasant(ResourceType object, int quantity, Position pos) {
+	public Peasant(ResourceType object, int quantity, Position pos, int unitID) {
 
 		super(true, "PEASANT", pos);
 
@@ -20,6 +21,7 @@ public class Peasant extends MapObject {
 
 		holdingObject = object;
 		this.resourceQuantity = quantity;
+		this.unitID = unitID;
 	}
 
 	public ResourceType getHoldingObject() {
@@ -60,6 +62,10 @@ public class Peasant extends MapObject {
 
 	public void setNextToTownHall(boolean isNextToTownHall) {
 		this.isNextToTownHall = isNextToTownHall;
+	}
+
+	public int getUnitID() {
+		return this.unitID;
 	}
 
 	public void resetNextTo() {
