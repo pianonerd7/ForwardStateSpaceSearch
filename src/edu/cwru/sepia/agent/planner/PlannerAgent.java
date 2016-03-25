@@ -118,7 +118,7 @@ public class PlannerAgent extends Agent {
 					return getPath(child);
 				}
 
-				if (canAddToOpenList(child, openList, closedList)) {
+				if (canAddToOpenList(child, openList)) {
 					openList.add(child);
 				}
 			}
@@ -128,21 +128,12 @@ public class PlannerAgent extends Agent {
 		return null;
 	}
 
-	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList,
-			ArrayList<GameState> closedList) {
+	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList) {
 
 		boolean toAdd = true;
 
 		for (GameState node : openList) {
-			// If the two nodes are identical, and the one already in open list
-			// has lower cost, ignore
-			if (neighbor.equals(node) && node.getCost() < neighbor.getCost()) {
-				toAdd = false;
-			}
-		}
-
-		for (GameState node : closedList) {
-			if (neighbor.equals(node) && node.getCost() < neighbor.getCost()) {
+			if (node.getCost() < neighbor.getCost()) {
 				toAdd = false;
 			}
 		}

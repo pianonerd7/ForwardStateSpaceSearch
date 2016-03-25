@@ -2,6 +2,7 @@ package edu.cwru.sepia.agent.planner.actions;
 
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.Peasant;
+import edu.cwru.sepia.agent.planner.Position;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 
 public class DepositAction implements StripsAction {
@@ -20,7 +21,11 @@ public class DepositAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
-		GameState newState = new GameState(this, state, state.getPeasant(), state.getForests(), state.getGoldMines(),
+		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
+				state.getPeasant().getResourceQuantity(),
+				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+
+		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState());
 

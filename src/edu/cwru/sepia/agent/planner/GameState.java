@@ -51,6 +51,8 @@ public class GameState implements Comparable<GameState> {
 	private int playerNum;
 	private State.StateView state;
 
+	private int cost = 0;
+
 	/**
 	 * Construct a GameState from a stateview object. This is used to construct
 	 * the initial search node. All other nodes should be constructed from the
@@ -80,10 +82,10 @@ public class GameState implements Comparable<GameState> {
 		for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
 
 			if (resource.getType().toString().equals("TREE")) {
-				forests.add(new Forest(false, resource.getAmountRemaining(), resource,
+				forests.add(new Forest(false, resource.getAmountRemaining(),
 						new Position(resource.getXPosition(), resource.getYPosition())));
 			} else if (resource.getType().toString().equals("GOLD_MINE")) {
-				goldMines.add(new GoldMine(false, resource.getAmountRemaining(), resource,
+				goldMines.add(new GoldMine(false, resource.getAmountRemaining(),
 						new Position(resource.getXPosition(), resource.getYPosition())));
 			}
 		}
@@ -217,8 +219,7 @@ public class GameState implements Comparable<GameState> {
 	 * @return The current cost to reach this goal
 	 */
 	public double getCost() {
-		// TODO: Implement me!
-		return 0.0;
+		return this.cost + heuristic();
 	}
 
 	/**
