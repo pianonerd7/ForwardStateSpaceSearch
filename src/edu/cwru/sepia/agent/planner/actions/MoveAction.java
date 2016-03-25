@@ -96,6 +96,6 @@ public class MoveAction implements StripsAction {
 	}
 
 	public String toString() {
-		return "[" + "MOVE to " + mapObject.getPosition().toString() + "]";
+		return "[" + "MOVE to " + this.bestPosition.toString() + "]";
 	}
 }

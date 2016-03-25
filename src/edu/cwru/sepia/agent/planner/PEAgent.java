@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import edu.cwru.sepia.action.Action;
+import edu.cwru.sepia.action.ActionResult;
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
 import edu.cwru.sepia.agent.planner.actions.HarvestAction;
@@ -106,37 +107,25 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
 
-		// TODO i also need to account for waiting for compound move
+		Stack<StripsAction> myPlan = this.plan;
+		Map<Integer, ActionResult> lastAction = historyView.getCommandFeedback(playernum,
+				stateView.getTurnNumber() - 1);
 
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
+		int peasantID = -1;
 
-		while (!plan.empty()) {
+		if (!myPlan.empty()) {
 
-			StripsAction stripsAction = plan.pop();
+			StripsAction stripsAction = myPlan.pop();
+			peasantID = getPeasantID(stripsAction);
+			sepiaAction.put(peasantID, createSepiaAction(stripsAction));
+		}
 
-			switch (stripsAction.getAction()) {
-			case "MOVE":
-				MoveAction move = (MoveAction) stripsAction;
-				Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
-						move.getBestPosition().y);
+		Unit.UnitView curUnit = stateView.getUnit(peasantID);
+		if (curUnit.getCurrentDurativeAction() != null) {
 
-				sepiaAction.put(move.getPeasant().getUnitID(), moveAction);
-				break;
-			case "HARVEST":
-				HarvestAction harvest = (HarvestAction) stripsAction;
-				Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
-						harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
+			while (curUnit.getCurrentDurativeProgress() < 1) {
 
-				sepiaAction.put(harvest.getPeasant().getUnitID(), harvestAction);
-				break;
-			case "DEPOSIT":
-				DepositAction deposit = (DepositAction) stripsAction;
-				Action depositAction = Action.createPrimitiveDeposit(deposit.getPeasant().getUnitID(),
-						deposit.getPeasant().getPosition().getDirection(
-								new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
-
-				sepiaAction.put(deposit.getPeasant().getUnitID(), depositAction);
-				break;
 			}
 		}
 
@@ -152,29 +141,55 @@ public class PEAgent extends Agent {
 	 */
 	private Action createSepiaAction(StripsAction action) {
 
-		switch (stripsAction.getAction()) {
+		switch (action.getAction()) {
 		case "MOVE":
-			MoveAction move = (MoveAction) stripsAction;
+			MoveAction move = (MoveAction) action;
 			Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
 					move.getBestPosition().y);
 
-			sepiaAction.put(move.getPeasant().getUnitID(), moveAction);
-			break;
+			return moveAction;
+
 		case "HARVEST":
-			HarvestAction harvest = (HarvestAction) stripsAction;
+			HarvestAction harvest = (HarvestAction) action;
 			Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
 					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
 
-			sepiaAction.put(harvest.getPeasant().getUnitID(), harvestAction);
-			break;
+			return harvestAction;
+
 		case "DEPOSIT":
-			DepositAction deposit = (DepositAction) stripsAction;
+			DepositAction deposit = (DepositAction) action;
 			Action depositAction = Action.createPrimitiveDeposit(deposit.getPeasant().getUnitID(),
 					deposit.getPeasant().getPosition()
 							.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
 
-			sepiaAction.put(deposit.getPeasant().getUnitID(), depositAction);
-			break;
+			return depositAction;
+
+		default:
+			return null;
+
+		}
+	}
+
+	private int getPeasantID(StripsAction action) {
+
+		switch (action.getAction()) {
+		case "MOVE":
+			MoveAction move = (MoveAction) action;
+
+			return move.getPeasant().getUnitID();
+
+		case "HARVEST":
+			HarvestAction harvest = (HarvestAction) action;
+
+			return harvest.getPeasant().getUnitID();
+
+		case "DEPOSIT":
+			DepositAction deposit = (DepositAction) action;
+
+			return deposit.getPeasant().getUnitID();
+
+		default:
+			return -1;
 		}
 	}
 
