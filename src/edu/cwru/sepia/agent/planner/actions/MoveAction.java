@@ -29,16 +29,32 @@ public class MoveAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
+		Position bestNeighbor = new Position(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+		for (Position pos : moveToThisLocation.getAdjacentPositions()) {
+
+			if (pos.inBounds(state.getState().getXExtent(), state.getState().getYExtent())
+					&& !state.getState().isResourceAt(pos.x, pos.y)) {
+				if (state.getPeasant().getPosition().euclideanDistance(pos) < state.getPeasant().getPosition()
+						.euclideanDistance(bestNeighbor)) {
+					bestNeighbor = new Position(pos.x, pos.y);
+				}
+			}
+		}
+
 		// only need to clone peasant because that's the only thing changing
 		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
 				state.getPeasant().getResourceQuantity(),
 				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
+		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
+		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
 
 		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState());
+				state.getPlayerNum(), state.getState(), 1);
 
-		newState.getPeasant().setPosition(new Position(moveToThisLocation.x, moveToThisLocation.y));
+		newState.getPeasant().setPosition(bestNeighbor);
 		newState.getPeasant().resetNextTo();
 
 		String type = mapObject.getName();

@@ -68,4 +68,7 @@ public class Peasant extends MapObject {
 		isNextToTownHall = false;
 	}
 
+	public String toString() {
+		return this.getPosition().toString();
+	}
 }

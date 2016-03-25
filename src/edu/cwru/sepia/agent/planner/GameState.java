@@ -102,7 +102,7 @@ public class GameState implements Comparable<GameState> {
 
 	public GameState(StripsAction parentAction, GameState parentState, Peasant peasant, ArrayList<Forest> forests,
 			ArrayList<GoldMine> goldMines, TownHall townHall, int goalWood, int goalGold, int myWood, int myGold,
-			int playerNum, State.StateView state) {
+			int playerNum, State.StateView state, int costToState) {
 
 		this.parentAction = parentAction;
 		this.parentState = parentState;
@@ -116,6 +116,7 @@ public class GameState implements Comparable<GameState> {
 		this.myGold = myGold;
 		this.playerNum = playerNum;
 		this.state = state;
+		this.cost = parentState.cost + costToState;
 	}
 
 	/**

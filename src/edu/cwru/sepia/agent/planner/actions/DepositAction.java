@@ -24,10 +24,13 @@ public class DepositAction implements StripsAction {
 		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
 				state.getPeasant().getResourceQuantity(),
 				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
+		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
+		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
 
 		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState());
+				state.getPlayerNum(), state.getState(), 1);
 
 		ResourceType resourceType = newState.getPeasant().getHoldingObject();
 		newState.getPeasant().resetNextTo();
@@ -42,6 +45,7 @@ public class DepositAction implements StripsAction {
 		newState.getPeasant().setHoldingObject(null);
 		newState.getPeasant().setIsEmpty(true);
 		newState.getPeasant().setNextToTownHall(true);
+
 		return newState;
 	}
 

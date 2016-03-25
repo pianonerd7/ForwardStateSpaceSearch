@@ -22,7 +22,8 @@ public class HarvestAction implements StripsAction {
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		return (peasant.isNextToGoldMine() || peasant.isNextToForest()) && peasant.getIsEmpty();
+		return resource.getPosition().isAdjacent(state.getPeasant().getPosition())
+				&& (peasant.isNextToGoldMine() || peasant.isNextToForest()) && peasant.getIsEmpty();
 	}
 
 	@Override
@@ -31,6 +32,9 @@ public class HarvestAction implements StripsAction {
 		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
 				state.getPeasant().getResourceQuantity(),
 				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
+		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
+		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
 
 		ArrayList<Forest> newForests = new ArrayList<Forest>();
 
@@ -52,7 +56,7 @@ public class HarvestAction implements StripsAction {
 
 		GameState newState = new GameState(this, state, newPeasant, newForests, newGoldMines, state.getTownHall(),
 				state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(), state.getPlayerNum(),
-				state.getState());
+				state.getState(), 1);
 
 		Position resourcePos = resource.getPosition();
 

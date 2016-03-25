@@ -118,9 +118,10 @@ public class PlannerAgent extends Agent {
 					return getPath(child);
 				}
 
-				if (canAddToOpenList(child, openList)) {
-					openList.add(child);
-				}
+				openList.add(child);
+				// if (canAddToOpenList(child, openList)) {
+				// openList.add(child);
+				// }
 			}
 			closedList.add(curState);
 		}
