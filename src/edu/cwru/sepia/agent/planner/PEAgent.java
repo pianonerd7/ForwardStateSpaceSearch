@@ -24,7 +24,7 @@ import edu.cwru.sepia.environment.model.state.Unit;
 public class PEAgent extends Agent {
 
 	// The plan being executed
-	private Stack<StripsAction> plan = new Stack<StripsAction>();
+	private Stack<StripsAction> plan = null;
 
 	// maps the real unit Ids to the plan's unit ids
 	// when you're planning you won't know the true unit IDs that sepia assigns.
@@ -106,11 +106,13 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
 
+		// TODO i also need to account for waiting for compound move
+
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 
-		while (!plan.isEmpty()) {
-			StripsAction test = this.plan.peek();
-			StripsAction stripsAction = this.plan.pop();
+		while (!plan.empty()) {
+
+			StripsAction stripsAction = plan.pop();
 
 			switch (stripsAction.getAction()) {
 			case "MOVE":
@@ -149,7 +151,31 @@ public class PEAgent extends Agent {
 	 * @return SEPIA representation of same action
 	 */
 	private Action createSepiaAction(StripsAction action) {
-		return null;
+
+		switch (stripsAction.getAction()) {
+		case "MOVE":
+			MoveAction move = (MoveAction) stripsAction;
+			Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
+					move.getBestPosition().y);
+
+			sepiaAction.put(move.getPeasant().getUnitID(), moveAction);
+			break;
+		case "HARVEST":
+			HarvestAction harvest = (HarvestAction) stripsAction;
+			Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
+					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
+
+			sepiaAction.put(harvest.getPeasant().getUnitID(), harvestAction);
+			break;
+		case "DEPOSIT":
+			DepositAction deposit = (DepositAction) stripsAction;
+			Action depositAction = Action.createPrimitiveDeposit(deposit.getPeasant().getUnitID(),
+					deposit.getPeasant().getPosition()
+							.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
+
+			sepiaAction.put(deposit.getPeasant().getUnitID(), depositAction);
+			break;
+		}
 	}
 
 	@Override
