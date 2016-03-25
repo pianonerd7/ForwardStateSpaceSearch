@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import edu.cwru.sepia.action.Action;
+import edu.cwru.sepia.action.ActionFeedback;
 import edu.cwru.sepia.action.ActionResult;
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
@@ -107,26 +108,25 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
 
-		Stack<StripsAction> myPlan = this.plan;
+		Stack<StripsAction> thePlan = this.plan;
 		Map<Integer, ActionResult> lastAction = historyView.getCommandFeedback(playernum,
 				stateView.getTurnNumber() - 1);
+		boolean isPrevActionComplete = true;
 
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 		int peasantID = -1;
 
-		if (!myPlan.empty()) {
-
-			StripsAction stripsAction = myPlan.pop();
+		if (!thePlan.empty()) {
+			StripsAction stripsAction = thePlan.pop();
 			peasantID = getPeasantID(stripsAction);
-			sepiaAction.put(peasantID, createSepiaAction(stripsAction));
-		}
+			isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
 
-		Unit.UnitView curUnit = stateView.getUnit(peasantID);
-		if (curUnit.getCurrentDurativeAction() != null) {
-
-			while (curUnit.getCurrentDurativeProgress() < 1) {
-
+			if (!isPrevActionComplete) {
+				thePlan.push(stripsAction);
+				return null;
 			}
+
+			sepiaAction.put(peasantID, createSepiaAction(stripsAction));
 		}
 
 		return sepiaAction;
