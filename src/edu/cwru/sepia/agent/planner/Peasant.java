@@ -1,7 +1,6 @@
 package edu.cwru.sepia.agent.planner;
 
 import edu.cwru.sepia.environment.model.state.ResourceType;
-import edu.cwru.sepia.environment.model.state.Unit;
 
 public class Peasant extends MapObject {
 
@@ -10,9 +9,8 @@ public class Peasant extends MapObject {
 	private boolean isNextToGoldMine;
 	private boolean isNextToForest;
 	private boolean isNextToTownHall;
-	private Unit.UnitView unit;
 
-	public Peasant(ResourceType object, int quantity, Unit.UnitView unit, Position pos) {
+	public Peasant(ResourceType object, int quantity, Position pos) {
 
 		super(true, "PEASANT", pos);
 
@@ -22,7 +20,6 @@ public class Peasant extends MapObject {
 
 		holdingObject = object;
 		this.resourceQuantity = quantity;
-		this.unit = unit;
 	}
 
 	public ResourceType getHoldingObject() {
@@ -63,14 +60,6 @@ public class Peasant extends MapObject {
 
 	public void setNextToTownHall(boolean isNextToTownHall) {
 		this.isNextToTownHall = isNextToTownHall;
-	}
-
-	public Unit.UnitView getUnit() {
-		return unit;
-	}
-
-	public void setUnit(Unit.UnitView unit) {
-		this.unit = unit;
 	}
 
 	public void resetNextTo() {

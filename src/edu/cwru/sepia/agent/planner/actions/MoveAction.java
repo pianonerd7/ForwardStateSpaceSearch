@@ -29,11 +29,16 @@ public class MoveAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
-		GameState newState = new GameState(this, state, state.getPeasant(), state.getForests(), state.getGoldMines(),
+		// only need to clone peasant because that's the only thing changing
+		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
+				state.getPeasant().getResourceQuantity(),
+				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+
+		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState());
 
-		newState.getPeasant().setPosition(moveToThisLocation);
+		newState.getPeasant().setPosition(new Position(moveToThisLocation.x, moveToThisLocation.y));
 		newState.getPeasant().resetNextTo();
 
 		String type = mapObject.getName();

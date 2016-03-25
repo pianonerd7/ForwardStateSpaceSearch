@@ -28,9 +28,31 @@ public class HarvestAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
-		GameState newState = new GameState(this, state, state.getPeasant(), state.getForests(), state.getGoldMines(),
-				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState());
+		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
+				state.getPeasant().getResourceQuantity(),
+				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y));
+
+		ArrayList<Forest> newForests = new ArrayList<Forest>();
+
+		for (Forest forest : state.getForests()) {
+			Forest newForest = new Forest(false, forest.getResourceQuantity(),
+					new Position(forest.getPosition().x, forest.getPosition().y));
+
+			newForests.add(newForest);
+		}
+
+		ArrayList<GoldMine> newGoldMines = new ArrayList<GoldMine>();
+
+		for (GoldMine goldmine : state.getGoldMines()) {
+			GoldMine newGoldMine = new GoldMine(false, goldmine.getResourceQuantity(),
+					new Position(goldmine.getPosition().x, goldmine.getPosition().y));
+
+			newGoldMines.add(newGoldMine);
+		}
+
+		GameState newState = new GameState(this, state, newPeasant, newForests, newGoldMines, state.getTownHall(),
+				state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(), state.getPlayerNum(),
+				state.getState());
 
 		Position resourcePos = resource.getPosition();
 
@@ -46,9 +68,9 @@ public class HarvestAction implements StripsAction {
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore
 					if (forest.getResourceQuantity() < 0) {
-						ArrayList<Forest> newForests = newState.getForests();
-						newForests.remove(forest);
-						newState.setForests(newForests);
+						ArrayList<Forest> newForest = newState.getForests();
+						newForest.remove(forest);
+						newState.setForests(newForest);
 					}
 
 					break;
@@ -68,9 +90,9 @@ public class HarvestAction implements StripsAction {
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore
 					if (goldmine.getResourceQuantity() < 0) {
-						ArrayList<Forest> newForests = newState.getForests();
-						newForests.remove(goldmine);
-						newState.setForests(newForests);
+						ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
+						newGoldMine.remove(goldmine);
+						newState.setGoldMines(newGoldMine);
 					}
 
 					break;
