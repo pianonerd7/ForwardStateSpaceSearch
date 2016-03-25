@@ -26,7 +26,7 @@ import edu.cwru.sepia.environment.model.state.Unit;
 public class PEAgent extends Agent {
 
 	// The plan being executed
-	private Stack<StripsAction> plan = null;
+	private Stack<StripsAction> plan = new Stack<StripsAction>();
 
 	// maps the real unit Ids to the plan's unit ids
 	// when you're planning you won't know the true unit IDs that sepia assigns.
@@ -41,7 +41,16 @@ public class PEAgent extends Agent {
 	public PEAgent(int playernum, Stack<StripsAction> plan) {
 		super(playernum);
 		peasantIdMap = new HashMap<Integer, Integer>();
-		this.plan = plan;
+		// this.plan = plan;
+
+		Stack<StripsAction> temp = new Stack<StripsAction>();
+		while (!plan.empty()) {
+			temp.push(plan.pop());
+		}
+
+		while (!temp.empty()) {
+			this.plan.push(temp.pop());
+		}
 	}
 
 	@Override
@@ -115,8 +124,8 @@ public class PEAgent extends Agent {
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 		int peasantID = -1;
 
-		if (!this.plan.empty()) {
-			StripsAction stripsAction = this.plan.pop();
+		if (!plan.empty()) {
+			StripsAction stripsAction = plan.pop();
 			peasantID = getPeasantID(stripsAction);
 
 			if (lastAction.get(peasantID) != null) {
@@ -124,7 +133,8 @@ public class PEAgent extends Agent {
 			}
 
 			if (!isPrevActionComplete) {
-				this.plan.push(stripsAction);
+				plan.push(stripsAction);
+				System.out.println("a move action ... ");
 				return null;
 			}
 
@@ -149,6 +159,7 @@ public class PEAgent extends Agent {
 			Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
 					move.getBestPosition().y);
 
+			System.out.println(moveAction.toString());
 			return moveAction;
 
 		case "HARVEST":
@@ -156,6 +167,7 @@ public class PEAgent extends Agent {
 			Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
 					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
 
+			System.out.println(harvestAction.toString());
 			return harvestAction;
 
 		case "DEPOSIT":
@@ -164,6 +176,7 @@ public class PEAgent extends Agent {
 					deposit.getPeasant().getPosition()
 							.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
 
+			System.out.println(depositAction.toString());
 			return depositAction;
 
 		default:
