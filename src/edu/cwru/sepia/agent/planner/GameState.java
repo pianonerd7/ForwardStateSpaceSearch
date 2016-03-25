@@ -251,6 +251,17 @@ public class GameState implements Comparable<GameState> {
 			return false;
 		}
 
+		GameState otherState = (GameState) o;
+
+		if (goalWood != otherState.getGoalWood() || goalGold != otherState.getGoalGold()
+				|| myWood != otherState.getMyWood() || myGold != otherState.getMyGold()) {
+			return false;
+		}
+
+		if (!parentAction.equals(otherState.getParentAction())) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

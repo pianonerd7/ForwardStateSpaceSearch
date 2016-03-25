@@ -41,10 +41,13 @@ public class MoveAction implements StripsAction {
 		switch (type) {
 		case "FOREST":
 			newState.getPeasant().setNextToForest(true);
+			break;
 		case "GOLDMINE":
 			newState.getPeasant().setNextToGoldMine(true);
+			break;
 		case "TOWNHALL":
 			newState.getPeasant().setNextToTownHall(true);
+			break;
 		}
 
 		return newState;
