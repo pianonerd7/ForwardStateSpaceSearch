@@ -108,21 +108,26 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
 
-		Stack<StripsAction> thePlan = this.plan;
+		Stack<StripsAction> curPlan = this.plan;
+
 		Map<Integer, ActionResult> lastAction = historyView.getCommandFeedback(playernum,
 				stateView.getTurnNumber() - 1);
+
 		boolean isPrevActionComplete = true;
 
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 		int peasantID = -1;
 
-		if (!thePlan.empty()) {
-			StripsAction stripsAction = thePlan.pop();
+		if (!curPlan.empty()) {
+			StripsAction stripsAction = curPlan.pop();
 			peasantID = getPeasantID(stripsAction);
-			isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
+
+			if (lastAction.get(peasantID) != null) {
+				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
+			}
 
 			if (!isPrevActionComplete) {
-				thePlan.push(stripsAction);
+				curPlan.push(stripsAction);
 				return null;
 			}
 
