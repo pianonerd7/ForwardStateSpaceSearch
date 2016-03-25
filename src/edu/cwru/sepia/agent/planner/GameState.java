@@ -246,8 +246,11 @@ public class GameState implements Comparable<GameState> {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		// TODO: Implement me!
-		return false;
+
+		if (!o.getClass().equals(GameState.class)) {
+			return false;
+		}
+
 	}
 
 	/**

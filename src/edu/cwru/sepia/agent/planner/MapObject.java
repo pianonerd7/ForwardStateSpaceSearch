@@ -21,7 +21,7 @@ public abstract class MapObject {
 	}
 
 	public String getName() {
-		return "";
+		return name;
 	}
 
 	public Position getPosition() {
