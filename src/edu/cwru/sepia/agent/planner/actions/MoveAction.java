@@ -79,4 +79,7 @@ public class MoveAction implements StripsAction {
 		return "MOVE";
 	}
 
+	public String toString() {
+		return "[" + "MOVE to " + mapObject.getPosition().toString() + "]";
+	}
 }

@@ -390,4 +390,8 @@ public class GameState implements Comparable<GameState> {
 		this.state = state;
 	}
 
+	public String toString() {
+		return heuristic() + "";
+	}
+
 }

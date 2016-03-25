@@ -35,9 +35,9 @@ public class DepositAction implements StripsAction {
 		ResourceType resourceType = newState.getPeasant().getHoldingObject();
 		newState.getPeasant().resetNextTo();
 
-		if (resourceType.equals("WOOD")) {
+		if (resourceType.toString().equals("WOOD")) {
 			newState.setMyWood(newState.getMyWood() + newState.getPeasant().getResourceQuantity());
-		} else if (resourceType.equals("GOLD")) {
+		} else if (resourceType.toString().equals("GOLD")) {
 			newState.setMyGold(newState.getMyGold() + newState.getPeasant().getResourceQuantity());
 		}
 
@@ -52,5 +52,9 @@ public class DepositAction implements StripsAction {
 	@Override
 	public String getAction() {
 		return "DEPOSIT";
+	}
+
+	public String toString() {
+		return "[" + "DEPOSIT, I came from" + peasant.getPosition().toString() + "]";
 	}
 }

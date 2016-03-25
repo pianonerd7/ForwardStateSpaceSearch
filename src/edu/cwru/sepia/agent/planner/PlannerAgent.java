@@ -56,7 +56,7 @@ public class PlannerAgent extends Agent {
 		}
 
 		// write the plan to a text file
-		savePlan(plan);
+		// savePlan(plan);
 
 		// Instantiates the PEAgent with the specified plan.
 		peAgent = new PEAgent(playernum, plan);

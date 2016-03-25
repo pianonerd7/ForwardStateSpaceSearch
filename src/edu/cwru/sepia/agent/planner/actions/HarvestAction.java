@@ -112,4 +112,8 @@ public class HarvestAction implements StripsAction {
 		return "HARVEST";
 	}
 
+	public String toString() {
+		return "[" + "HARVEST from " + resource.getPosition().toString() + "]";
+	}
+
 }
