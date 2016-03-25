@@ -102,7 +102,6 @@ public class PlannerAgent extends Agent {
 	private Stack<StripsAction> AstarSearch(GameState startState) {
 
 		ArrayList<GameState> openList = new ArrayList<GameState>();
-		ArrayList<GameState> closedList = new ArrayList<GameState>();
 
 		openList.add(startState);
 
@@ -115,13 +114,11 @@ public class PlannerAgent extends Agent {
 			for (GameState child : curState.generateChildren()) {
 				if (curState.isGoal()) {
 					System.out.println("PATH FOUND \n");
-					return getPath(child);
+					return getPath(curState);
 				}
 
 				openList.add(child);
-
 			}
-			closedList.add(curState);
 		}
 		System.exit(0);
 		return null;
@@ -132,6 +129,7 @@ public class PlannerAgent extends Agent {
 		Stack<StripsAction> actions = new Stack<StripsAction>();
 
 		while (child != null) {
+			System.out.println(child.getParentAction().toString());
 			actions.add(child.getParentAction());
 			child = child.getParentState();
 		}
