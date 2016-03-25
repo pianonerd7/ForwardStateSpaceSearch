@@ -72,7 +72,7 @@ public class HarvestAction implements StripsAction {
 
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore
-					if (forest.getResourceQuantity() < 0) {
+					if (forest.getResourceQuantity() <= 0) {
 						ArrayList<Forest> newForest = newState.getForests();
 						newForest.remove(forest);
 						newState.setForests(newForest);
@@ -94,7 +94,7 @@ public class HarvestAction implements StripsAction {
 
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore
-					if (goldmine.getResourceQuantity() < 0) {
+					if (goldmine.getResourceQuantity() <= 0) {
 						ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
 						newGoldMine.remove(goldmine);
 						newState.setGoldMines(newGoldMine);
