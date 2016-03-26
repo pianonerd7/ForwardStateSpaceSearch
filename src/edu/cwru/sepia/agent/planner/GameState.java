@@ -392,7 +392,8 @@ public class GameState implements Comparable<GameState> {
 	}
 
 	public String toString() {
-		return heuristic() + "";
+		return "[PEASANT: " + this.peasant.getPosition().toString() + "] \n [Action: " + this.parentAction.toString()
+				+ "] \n [HEURISTIC: " + heuristic() + "]";
 	}
 
 }

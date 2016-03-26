@@ -136,6 +136,10 @@ public class PlannerAgent extends Agent {
 			child = child.getParentState();
 		}
 
+		while (actions.peek() == null) {
+			actions.pop();
+		}
+
 		return actions;
 	}
 

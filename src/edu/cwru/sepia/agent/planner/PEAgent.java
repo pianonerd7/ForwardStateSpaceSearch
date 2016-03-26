@@ -41,16 +41,7 @@ public class PEAgent extends Agent {
 	public PEAgent(int playernum, Stack<StripsAction> plan) {
 		super(playernum);
 		peasantIdMap = new HashMap<Integer, Integer>();
-		// this.plan = plan;
-
-		Stack<StripsAction> temp = new Stack<StripsAction>();
-		while (!plan.empty()) {
-			temp.push(plan.pop());
-		}
-
-		while (!temp.empty()) {
-			this.plan.push(temp.pop());
-		}
+		this.plan = plan;
 	}
 
 	@Override
