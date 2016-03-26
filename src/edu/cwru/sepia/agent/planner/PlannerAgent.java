@@ -131,7 +131,10 @@ public class PlannerAgent extends Agent {
 	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList) {
 
 		for (GameState node : openList) {
-			if (node.getCost() < neighbor.getCost()) {
+			if (node.getPeasant().getPosition().equals(neighbor.getPeasant().getPosition())
+					&& node.getParentAction().equals(neighbor.getParentAction())
+					&& node.getMyGold() == neighbor.getMyGold() && node.getMyWood() == neighbor.getMyWood()
+					&& node.getCost() < neighbor.getCost()) {
 				return false;
 			}
 		}
