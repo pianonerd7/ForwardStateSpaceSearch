@@ -56,7 +56,8 @@ public class MoveAction implements StripsAction {
 
 		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState(), 1);
+				state.getPlayerNum(), state.getState(),
+				(int) state.getPeasant().getPosition().euclideanDistance(bestNeighbor));
 
 		newState.getPeasant().setPosition(bestNeighbor);
 		newState.getPeasant().resetNextTo();
