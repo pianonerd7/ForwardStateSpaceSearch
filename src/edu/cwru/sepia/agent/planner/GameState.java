@@ -227,15 +227,25 @@ public class GameState implements Comparable<GameState> {
 
 				HarvestAction harvest = (HarvestAction) parentAction;
 
-				if (harvest.getResource().getName().equals("FOREST") && myWood < goalWood) {
-					heuristic += 100;
+				if (harvest.getResource().getName().equals("FOREST")) {
+					if (myWood <= goalWood) {
+						heuristic += 200;
+					}
+					if (myWood > goalWood) {
+						heuristic -= 1000;
+					}
 				}
 
-				else if (harvest.getResource().getName().equals("GOLDMINE") && myGold < goalGold) {
-					heuristic += 100;
-				} else {
-					heuristic -= 1000;
+				else if (harvest.getResource().getName().equals("GOLDMINE")) {
+					if (myGold <= goalGold) {
+						heuristic += 200;
+					}
+
+					if (myGold > goalGold) {
+						heuristic -= 1000;
+					}
 				}
+
 				break;
 
 			case "DEPOSIT":
@@ -247,8 +257,6 @@ public class GameState implements Comparable<GameState> {
 		case "HARVEST":
 			switch (lastAction) {
 			case "MOVE":
-
-				Harvest harvest = (HarvestAction) parentAction;
 				heuristic += 100;
 				break;
 			}
@@ -266,6 +274,7 @@ public class GameState implements Comparable<GameState> {
 
 		// heuristic += this.myGold + this.myWood;
 		return heuristic;
+
 	}
 
 	/**
@@ -277,7 +286,8 @@ public class GameState implements Comparable<GameState> {
 	 * @return The current cost to reach this goal
 	 */
 	public double getCost() {
-		return this.cost + heuristic();
+		// return this.cost + heuristic();
+		return this.cost;
 	}
 
 	/**
