@@ -46,6 +46,8 @@ public class DepositAction implements StripsAction {
 				newPeasant.setHoldingObject(null);
 				newPeasant.setIsEmpty(true);
 				newPeasant.setNextToTownHall(true);
+
+				newPeasants.add(newPeasant);
 			}
 		}
 

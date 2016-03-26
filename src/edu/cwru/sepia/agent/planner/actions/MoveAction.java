@@ -80,6 +80,8 @@ public class MoveAction implements StripsAction {
 				}
 
 				cost = (int) newPeasant.getPosition().euclideanDistance(bestNeighbor);
+
+				newPeasants.add(newPeasant);
 			}
 		}
 

@@ -52,6 +52,8 @@ public class HarvestAction implements StripsAction {
 					newPeasant.setIsEmpty(false);
 					newPeasant.setResourceQuantity(100);
 				}
+
+				newPeasants.add(newPeasant);
 			}
 		}
 
