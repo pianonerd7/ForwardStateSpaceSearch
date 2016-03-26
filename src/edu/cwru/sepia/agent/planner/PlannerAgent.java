@@ -119,11 +119,24 @@ public class PlannerAgent extends Agent {
 					return getPath(curState);
 				}
 
-				openList.add(child);
+				if (canAddToOpenList(child, openList)) {
+					openList.add(child);
+				}
 			}
 		}
 		System.exit(0);
 		return null;
+	}
+
+	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList) {
+
+		for (GameState node : openList) {
+			if (node.getCost() < neighbor.getCost()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private Stack<StripsAction> getPath(GameState child) {
