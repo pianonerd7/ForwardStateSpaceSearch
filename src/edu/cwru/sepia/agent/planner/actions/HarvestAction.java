@@ -77,7 +77,8 @@ public class HarvestAction implements StripsAction {
 
 		GameState newState = new GameState(this, state, newPeasants, newForests, newGoldMines, state.getTownHall(),
 				state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(), state.getPlayerNum(),
-				state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(), state.isBuildPeasants());
+				state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(), state.isBuildPeasants(),
+				state.getTotalFoodOnMap());
 
 		if (resource.getName().equals("FOREST")) {
 			for (Forest forest : newState.getForests()) {

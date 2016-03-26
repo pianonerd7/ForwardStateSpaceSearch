@@ -88,7 +88,7 @@ public class MoveAction implements StripsAction {
 		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState(), cost, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
-				state.isBuildPeasants());
+				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
 		return newState;
 	}

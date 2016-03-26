@@ -51,6 +51,7 @@ public class GameState implements Comparable<GameState> {
 	private int totalGoldOnMap = 0;
 	private boolean buildPeasants = false;
 
+	private int totalFoodOnMap = 0;
 	private int playerNum;
 	private State.StateView state;
 
@@ -109,12 +110,14 @@ public class GameState implements Comparable<GameState> {
 				this.townHall = new TownHall(true, unit, new Position(unit.getXPosition(), unit.getYPosition()));
 			}
 		}
+
+		totalFoodOnMap = state.getSupplyCap(playernum);
 	}
 
 	public GameState(StripsAction parentAction, GameState parentState, ArrayList<Peasant> peasant,
 			ArrayList<Forest> forests, ArrayList<GoldMine> goldMines, TownHall townHall, int goalWood, int goalGold,
 			int myWood, int myGold, int playerNum, State.StateView state, int costToState, int totalWoodOnMap,
-			int totalGoldOnMap, boolean buildPeasants) {
+			int totalGoldOnMap, boolean buildPeasants, int totalFoodOnMap) {
 
 		this.parentAction = parentAction;
 		this.parentState = parentState;
@@ -132,6 +135,7 @@ public class GameState implements Comparable<GameState> {
 		this.totalWoodOnMap = totalWoodOnMap;
 		this.totalGoldOnMap = totalGoldOnMap;
 		this.buildPeasants = buildPeasants;
+		this.totalFoodOnMap = totalFoodOnMap;
 	}
 
 	/**
@@ -500,8 +504,12 @@ public class GameState implements Comparable<GameState> {
 		return buildPeasants;
 	}
 
-	public void setBuildPeasants(boolean buildPeasants) {
-		this.buildPeasants = buildPeasants;
+	public int getTotalFoodOnMap() {
+		return totalFoodOnMap;
+	}
+
+	public void setTotalFoodOnMap(int totalFoodOnMap) {
+		this.totalFoodOnMap = totalFoodOnMap;
 	}
 
 	public String toString() {

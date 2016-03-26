@@ -54,7 +54,7 @@ public class DepositAction implements StripsAction {
 		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
-				state.isBuildPeasants());
+				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
 		if (resourceType.toString().equals("WOOD")) {
 			newState.setMyWood(newState.getMyWood() + resourceQuantity);
