@@ -1,5 +1,7 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import java.util.ArrayList;
+
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.Peasant;
 import edu.cwru.sepia.agent.planner.Position;
@@ -21,31 +23,42 @@ public class DepositAction implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 
-		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
-				state.getPeasant().getResourceQuantity(),
-				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y),
-				state.getPeasant().getUnitID());
-		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
-		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
-		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
+		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
+		ResourceType resourceType = null;
+		int resourceQuantity = 0;
 
-		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
-				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState(), 1);
+		for (Peasant statePeasant : state.getPeasants()) {
+			if (statePeasant.getUnitID() != this.peasant.getUnitID()) {
+				newPeasants.add(statePeasant);
+			} else {
+				Peasant newPeasant = new Peasant(statePeasant.getHoldingObject(), statePeasant.getResourceQuantity(),
+						new Position(statePeasant.getPosition().x, statePeasant.getPosition().y),
+						statePeasant.getUnitID());
+				newPeasant.setNextToForest(statePeasant.isNextToForest());
+				newPeasant.setNextToGoldMine(statePeasant.isNextToGoldMine());
+				newPeasant.setNextToTownHall(statePeasant.isNextToTownHall());
 
-		ResourceType resourceType = newState.getPeasant().getHoldingObject();
-		newState.getPeasant().resetNextTo();
+				resourceType = newPeasant.getHoldingObject();
+				resourceQuantity = newPeasant.getResourceQuantity();
+				newPeasant.resetNextTo();
 
-		if (resourceType.toString().equals("WOOD")) {
-			newState.setMyWood(newState.getMyWood() + newState.getPeasant().getResourceQuantity());
-		} else if (resourceType.toString().equals("GOLD")) {
-			newState.setMyGold(newState.getMyGold() + newState.getPeasant().getResourceQuantity());
+				newPeasant.setResourceQuantity(0);
+				newPeasant.setHoldingObject(null);
+				newPeasant.setIsEmpty(true);
+				newPeasant.setNextToTownHall(true);
+			}
 		}
 
-		newState.getPeasant().setResourceQuantity(0);
-		newState.getPeasant().setHoldingObject(null);
-		newState.getPeasant().setIsEmpty(true);
-		newState.getPeasant().setNextToTownHall(true);
+		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
+				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
+				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
+				state.isBuildPeasants());
+
+		if (resourceType.toString().equals("WOOD")) {
+			newState.setMyWood(newState.getMyWood() + resourceQuantity);
+		} else if (resourceType.toString().equals("GOLD")) {
+			newState.setMyGold(newState.getMyGold() + resourceQuantity);
+		}
 
 		return newState;
 	}

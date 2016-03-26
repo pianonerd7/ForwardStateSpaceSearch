@@ -38,7 +38,7 @@ public class GameState implements Comparable<GameState> {
 	// The state of the parent prior to the parent Action
 	private GameState parentState = null;
 
-	private Peasant peasant;
+	private ArrayList<Peasant> peasants;
 	private ArrayList<Forest> forests;
 	private ArrayList<GoldMine> goldMines;
 	private TownHall townHall;
@@ -47,6 +47,9 @@ public class GameState implements Comparable<GameState> {
 	private int goalGold;
 	private int myWood = 0;
 	private int myGold = 0;
+	private int totalWoodOnMap = 0;
+	private int totalGoldOnMap = 0;
+	private boolean buildPeasants = false;
 
 	private int playerNum;
 	private State.StateView state;
@@ -75,7 +78,9 @@ public class GameState implements Comparable<GameState> {
 		this.playerNum = playernum;
 		this.goalWood = requiredWood;
 		this.goalGold = requiredGold;
+		this.buildPeasants = buildPeasants;
 
+		peasants = new ArrayList<Peasant>();
 		forests = new ArrayList<Forest>();
 		goldMines = new ArrayList<GoldMine>();
 
@@ -84,16 +89,21 @@ public class GameState implements Comparable<GameState> {
 			if (resource.getType().toString().equals("TREE")) {
 				forests.add(new Forest(false, resource.getAmountRemaining(),
 						new Position(resource.getXPosition(), resource.getYPosition())));
+
+				totalWoodOnMap += resource.getAmountRemaining();
+
 			} else if (resource.getType().toString().equals("GOLD_MINE")) {
 				goldMines.add(new GoldMine(false, resource.getAmountRemaining(),
 						new Position(resource.getXPosition(), resource.getYPosition())));
+
+				totalGoldOnMap += resource.getAmountRemaining();
 			}
 		}
 
 		for (Unit.UnitView unit : state.getAllUnits()) {
 			if (unit.getTemplateView().getName().toLowerCase().equals("peasant")) {
-				this.peasant = new Peasant(null, 0, new Position(unit.getXPosition(), unit.getYPosition()),
-						unit.getID());
+				this.peasants.add(new Peasant(null, 0, new Position(unit.getXPosition(), unit.getYPosition()),
+						this.peasants.size()));
 			}
 			if (unit.getTemplateView().getName().toLowerCase().equals("townhall")) {
 				this.townHall = new TownHall(true, unit, new Position(unit.getXPosition(), unit.getYPosition()));
@@ -101,13 +111,14 @@ public class GameState implements Comparable<GameState> {
 		}
 	}
 
-	public GameState(StripsAction parentAction, GameState parentState, Peasant peasant, ArrayList<Forest> forests,
-			ArrayList<GoldMine> goldMines, TownHall townHall, int goalWood, int goalGold, int myWood, int myGold,
-			int playerNum, State.StateView state, int costToState) {
+	public GameState(StripsAction parentAction, GameState parentState, ArrayList<Peasant> peasant,
+			ArrayList<Forest> forests, ArrayList<GoldMine> goldMines, TownHall townHall, int goalWood, int goalGold,
+			int myWood, int myGold, int playerNum, State.StateView state, int costToState, int totalWoodOnMap,
+			int totalGoldOnMap, boolean buildPeasants) {
 
 		this.parentAction = parentAction;
 		this.parentState = parentState;
-		this.peasant = peasant;
+		this.peasants = peasant;
 		this.forests = forests;
 		this.goldMines = goldMines;
 		this.townHall = townHall;
@@ -118,6 +129,9 @@ public class GameState implements Comparable<GameState> {
 		this.playerNum = playerNum;
 		this.state = state;
 		this.cost = costToState;
+		this.totalWoodOnMap = totalWoodOnMap;
+		this.totalGoldOnMap = totalGoldOnMap;
+		this.buildPeasants = buildPeasants;
 	}
 
 	/**
@@ -148,48 +162,49 @@ public class GameState implements Comparable<GameState> {
 
 		// If peasant isn't holding anything, it should move to a resource, or
 		// harvest at a resource
-		if (peasant.getIsEmpty()) {
-			for (Forest forest : forests) {
-				HarvestAction harvest = new HarvestAction(this.peasant, forest);
+		for (Peasant peasant : peasants) {
+			if (peasant.getIsEmpty()) {
+				for (Forest forest : forests) {
+					HarvestAction harvest = new HarvestAction(peasant, forest);
 
-				if (harvest.preconditionsMet(this)) {
-					children.add(harvest.apply(this));
+					if (harvest.preconditionsMet(this)) {
+						children.add(harvest.apply(this));
+					}
+
+					if (parentAction == null || parentAction.getAction() != "MOVE") {
+						MoveAction move = new MoveAction(peasant, forest, forest.getPosition());
+						children.add(move.apply(this));
+					}
+				}
+
+				for (GoldMine goldmine : goldMines) {
+					HarvestAction harvest = new HarvestAction(peasant, goldmine);
+
+					if (harvest.preconditionsMet(this)) {
+						children.add(harvest.apply(this));
+					}
+
+					if (parentAction == null || parentAction.getAction() != "MOVE") {
+						MoveAction move = new MoveAction(peasant, goldmine, goldmine.getPosition());
+						children.add(move.apply(this));
+					}
+				}
+			}
+
+			// If a peasant is holding something, it should move towards the
+			// TownHall, or deposit at TownHall
+			if (!peasant.getIsEmpty()) {
+
+				DepositAction deposit = new DepositAction(peasant);
+
+				if (deposit.preconditionsMet(this)) {
+					children.add(deposit.apply(this));
 				}
 
 				if (parentAction == null || parentAction.getAction() != "MOVE") {
-					MoveAction move = new MoveAction(this.peasant, forest, forest.getPosition());
+					MoveAction move = new MoveAction(peasant, this.townHall, townHall.getPosition());
 					children.add(move.apply(this));
 				}
-			}
-
-			for (GoldMine goldmine : goldMines) {
-				HarvestAction harvest = new HarvestAction(this.peasant, goldmine);
-
-				if (harvest.preconditionsMet(this)) {
-					children.add(harvest.apply(this));
-				}
-
-				if (parentAction == null || parentAction.getAction() != "MOVE") {
-					MoveAction move = new MoveAction(this.peasant, goldmine, goldmine.getPosition());
-					children.add(move.apply(this));
-				}
-			}
-
-		}
-
-		// If a peasant is holding something, it should move towards the
-		// TownHall, or deposit at TownHall
-		if (!peasant.getIsEmpty()) {
-
-			DepositAction deposit = new DepositAction(this.peasant);
-
-			if (deposit.preconditionsMet(this)) {
-				children.add(deposit.apply(this));
-			}
-
-			if (parentAction == null || parentAction.getAction() != "MOVE") {
-				MoveAction move = new MoveAction(this.peasant, this.townHall, townHall.getPosition());
-				children.add(move.apply(this));
 			}
 		}
 
@@ -385,12 +400,12 @@ public class GameState implements Comparable<GameState> {
 		this.parentState = parentState;
 	}
 
-	public Peasant getPeasant() {
-		return peasant;
+	public ArrayList<Peasant> getPeasants() {
+		return peasants;
 	}
 
-	public void setPeasant(Peasant peasant) {
-		this.peasant = peasant;
+	public void setPeasants(ArrayList<Peasant> peasants) {
+		this.peasants = peasants;
 	}
 
 	public ArrayList<Forest> getForests() {
@@ -465,9 +480,39 @@ public class GameState implements Comparable<GameState> {
 		this.state = state;
 	}
 
+	public int getTotalWoodOnMap() {
+		return totalWoodOnMap;
+	}
+
+	public void setTotalWoodOnMap(int totalWoodOnMap) {
+		this.totalWoodOnMap = totalWoodOnMap;
+	}
+
+	public int getTotalGoldOnMap() {
+		return totalGoldOnMap;
+	}
+
+	public void setTotalGoldOnMap(int totalGoldOnMap) {
+		this.totalGoldOnMap = totalGoldOnMap;
+	}
+
+	public boolean isBuildPeasants() {
+		return buildPeasants;
+	}
+
+	public void setBuildPeasants(boolean buildPeasants) {
+		this.buildPeasants = buildPeasants;
+	}
+
 	public String toString() {
-		return "[PEASANT: " + this.peasant.getPosition().toString() + "] \n [Action: " + this.parentAction.toString()
-				+ "] \n [HEURISTIC: " + heuristic() + "]";
+		StringBuilder sb = new StringBuilder();
+
+		for (Peasant peasant : peasants) {
+			sb.append("[PEASANT: " + peasant.getPosition().toString() + "] \n");
+		}
+
+		sb.append("[Action: " + this.parentAction.toString() + "] \n [HEURISTIC: " + heuristic() + "]");
+		return sb.toString();
 	}
 
 }

@@ -22,20 +22,38 @@ public class HarvestAction implements StripsAction {
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		return resource.getPosition().isAdjacent(state.getPeasant().getPosition())
+		return resource.getPosition().isAdjacent(peasant.getPosition())
 				&& (peasant.isNextToGoldMine() || peasant.isNextToForest()) && peasant.getIsEmpty();
 	}
 
 	@Override
 	public GameState apply(GameState state) {
 
-		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
-				state.getPeasant().getResourceQuantity(),
-				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y),
-				state.getPeasant().getUnitID());
-		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
-		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
-		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
+		Position resourcePos = resource.getPosition();
+		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
+
+		for (Peasant statePeasant : state.getPeasants()) {
+			if (statePeasant.getUnitID() != this.peasant.getUnitID()) {
+				newPeasants.add(statePeasant);
+			} else {
+				Peasant newPeasant = new Peasant(statePeasant.getHoldingObject(), statePeasant.getResourceQuantity(),
+						new Position(statePeasant.getPosition().x, statePeasant.getPosition().y),
+						statePeasant.getUnitID());
+				newPeasant.setNextToForest(statePeasant.isNextToForest());
+				newPeasant.setNextToGoldMine(statePeasant.isNextToGoldMine());
+				newPeasant.setNextToTownHall(statePeasant.isNextToTownHall());
+
+				if (resource.getName().equals("FOREST")) {
+					newPeasant.setHoldingObject(ResourceType.WOOD);
+					newPeasant.setIsEmpty(false);
+					newPeasant.setResourceQuantity(100);
+				} else if (resource.getName().equals("GOLDMINE")) {
+					newPeasant.setHoldingObject(ResourceType.GOLD);
+					newPeasant.setIsEmpty(false);
+					newPeasant.setResourceQuantity(100);
+				}
+			}
+		}
 
 		ArrayList<Forest> newForests = new ArrayList<Forest>();
 
@@ -55,20 +73,15 @@ public class HarvestAction implements StripsAction {
 			newGoldMines.add(newGoldMine);
 		}
 
-		GameState newState = new GameState(this, state, newPeasant, newForests, newGoldMines, state.getTownHall(),
+		GameState newState = new GameState(this, state, newPeasants, newForests, newGoldMines, state.getTownHall(),
 				state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(), state.getPlayerNum(),
-				state.getState(), 1);
-
-		Position resourcePos = resource.getPosition();
+				state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(), state.isBuildPeasants());
 
 		if (resource.getName().equals("FOREST")) {
 			for (Forest forest : newState.getForests()) {
 				if (forest.getPosition().x == resourcePos.x && forest.getPosition().y == resourcePos.y) {
 
 					forest.setResourceQuantity(forest.getResourceQuantity() - 100);
-					newState.getPeasant().setHoldingObject(ResourceType.WOOD);
-					newState.getPeasant().setIsEmpty(false);
-					newState.getPeasant().setResourceQuantity(100);
 
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore
@@ -88,9 +101,6 @@ public class HarvestAction implements StripsAction {
 				if (goldmine.getPosition().x == resourcePos.x && goldmine.getPosition().y == resourcePos.y) {
 
 					goldmine.setResourceQuantity(goldmine.getResourceQuantity() - 100);
-					newState.getPeasant().setHoldingObject(ResourceType.GOLD);
-					newState.getPeasant().setIsEmpty(false);
-					newState.getPeasant().setResourceQuantity(100);
 
 					// If the amount of wood at that forest is less than 0, then
 					// we don't consider it anymore

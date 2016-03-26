@@ -1,5 +1,7 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import java.util.ArrayList;
+
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.MapObject;
 import edu.cwru.sepia.agent.planner.Peasant;
@@ -19,7 +21,7 @@ public class MoveAction implements StripsAction {
 	}
 
 	/**
-	 * You should always be able to move. It may not be the move with the
+	 * You should always be able to move. It may not be the action with the
 	 * highest utility, but you always have the option to
 	 */
 	@Override
@@ -36,7 +38,7 @@ public class MoveAction implements StripsAction {
 
 			if (pos.inBounds(state.getState().getXExtent(), state.getState().getYExtent())
 					&& !state.getState().isResourceAt(pos.x, pos.y)) {
-				if (state.getPeasant().getPosition().euclideanDistance(pos) < state.getPeasant().getPosition()
+				if (peasant.getPosition().euclideanDistance(pos) < peasant.getPosition()
 						.euclideanDistance(bestNeighbor)) {
 					bestNeighbor = new Position(pos.x, pos.y);
 				}
@@ -44,37 +46,47 @@ public class MoveAction implements StripsAction {
 		}
 
 		this.bestPosition = bestNeighbor;
+		int cost = 0;
 
 		// only need to clone peasant because that's the only thing changing
-		Peasant newPeasant = new Peasant(state.getPeasant().getHoldingObject(),
-				state.getPeasant().getResourceQuantity(),
-				new Position(state.getPeasant().getPosition().x, state.getPeasant().getPosition().y),
-				state.getPeasant().getUnitID());
-		newPeasant.setNextToForest(state.getPeasant().isNextToForest());
-		newPeasant.setNextToGoldMine(state.getPeasant().isNextToGoldMine());
-		newPeasant.setNextToTownHall(state.getPeasant().isNextToTownHall());
+		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
 
-		GameState newState = new GameState(this, state, newPeasant, state.getForests(), state.getGoldMines(),
-				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
-				state.getPlayerNum(), state.getState(),
-				(int) state.getPeasant().getPosition().euclideanDistance(bestNeighbor));
+		for (Peasant statePeasant : state.getPeasants()) {
+			if (statePeasant.getUnitID() != this.peasant.getUnitID()) {
+				newPeasants.add(statePeasant);
+			} else {
+				Peasant newPeasant = new Peasant(statePeasant.getHoldingObject(), statePeasant.getResourceQuantity(),
+						new Position(statePeasant.getPosition().x, statePeasant.getPosition().y),
+						statePeasant.getUnitID());
+				newPeasant.setNextToForest(statePeasant.isNextToForest());
+				newPeasant.setNextToGoldMine(statePeasant.isNextToGoldMine());
+				newPeasant.setNextToTownHall(statePeasant.isNextToTownHall());
 
-		newState.getPeasant().setPosition(bestNeighbor);
-		newState.getPeasant().resetNextTo();
+				newPeasant.setPosition(bestNeighbor);
+				newPeasant.resetNextTo();
 
-		String type = mapObject.getName();
+				String type = mapObject.getName();
 
-		switch (type) {
-		case "FOREST":
-			newState.getPeasant().setNextToForest(true);
-			break;
-		case "GOLDMINE":
-			newState.getPeasant().setNextToGoldMine(true);
-			break;
-		case "TOWNHALL":
-			newState.getPeasant().setNextToTownHall(true);
-			break;
+				switch (type) {
+				case "FOREST":
+					newPeasant.setNextToForest(true);
+					break;
+				case "GOLDMINE":
+					newPeasant.setNextToGoldMine(true);
+					break;
+				case "TOWNHALL":
+					newPeasant.setNextToTownHall(true);
+					break;
+				}
+
+				cost = (int) newPeasant.getPosition().euclideanDistance(bestNeighbor);
+			}
 		}
+
+		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
+				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
+				state.getPlayerNum(), state.getState(), cost, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
+				state.isBuildPeasants());
 
 		return newState;
 	}
