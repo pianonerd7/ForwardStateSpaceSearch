@@ -117,7 +117,7 @@ public class GameState implements Comparable<GameState> {
 		this.myGold = myGold;
 		this.playerNum = playerNum;
 		this.state = state;
-		this.cost = parentState.cost + costToState;
+		this.cost = costToState;
 	}
 
 	/**
@@ -214,7 +214,6 @@ public class GameState implements Comparable<GameState> {
 
 		if (parentState.parentAction == null) {
 
-			heuristic += 10;
 			return heuristic;
 		}
 
@@ -265,14 +264,38 @@ public class GameState implements Comparable<GameState> {
 		case "DEPOSIT":
 			switch (lastAction) {
 			case "MOVE":
-				heuristic += 100;
+
+				MoveAction moveAction = (MoveAction) parentAction;
+				String moveToResourceType = moveAction.getMapObject().getName();
+
+				switch (moveToResourceType) {
+				case "FOREST":
+
+					if (myWood < goalWood) {
+						heuristic += 200;
+					}
+					if (myWood > goalWood) {
+						heuristic -= 1000;
+					}
+					break;
+				case "GOLDMINE":
+
+					if (myGold < goalGold) {
+						heuristic += 200;
+					}
+
+					if (myGold > goalGold) {
+						heuristic -= 1000;
+					}
+					break;
+				}
+
 				break;
 			}
 			break;
 
 		}
 
-		// heuristic += this.myGold + this.myWood;
 		return heuristic;
 
 	}
@@ -286,8 +309,8 @@ public class GameState implements Comparable<GameState> {
 	 * @return The current cost to reach this goal
 	 */
 	public double getCost() {
-		// return this.cost + heuristic();
-		return this.cost;
+		return this.cost + heuristic();
+		// return this.cost;
 	}
 
 	/**

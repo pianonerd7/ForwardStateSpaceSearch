@@ -96,6 +96,14 @@ public class MoveAction implements StripsAction {
 		return "MOVE";
 	}
 
+	public MapObject getMapObject() {
+		return mapObject;
+	}
+
+	public void setMapObject(MapObject mapObject) {
+		this.mapObject = mapObject;
+	}
+
 	public String toString() {
 		return "[" + "MOVE to " + this.bestPosition.toString() + "]";
 	}
