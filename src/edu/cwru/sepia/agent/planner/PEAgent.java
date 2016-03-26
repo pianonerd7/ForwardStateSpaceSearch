@@ -47,6 +47,7 @@ public class PEAgent extends Agent {
 	@Override
 	public Map<Integer, Action> initialStep(State.StateView stateView, History.HistoryView historyView) {
 		// gets the townhall ID and the peasant ID
+		int myIndex = 0;
 		for (int unitId : stateView.getUnitIds(playernum)) {
 			Unit.UnitView unit = stateView.getUnit(unitId);
 			String unitType = unit.getTemplateView().getName().toLowerCase();
@@ -54,7 +55,8 @@ public class PEAgent extends Agent {
 				townhallId = unitId;
 				townHall = stateView.getUnit(unitId);
 			} else if (unitType.equals("peasant")) {
-				peasantIdMap.put(unitId, unitId);
+				peasantIdMap.put(myIndex, unitId);
+				myIndex++;
 			}
 		}
 
@@ -117,7 +119,7 @@ public class PEAgent extends Agent {
 
 		if (!plan.empty()) {
 			StripsAction stripsAction = plan.pop();
-			peasantID = getPeasantID(stripsAction);
+			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
 
 			if (lastAction.get(peasantID) != null) {
 				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
@@ -129,7 +131,7 @@ public class PEAgent extends Agent {
 				return null;
 			}
 
-			sepiaAction.put(peasantID, createSepiaAction(stripsAction));
+			sepiaAction.put(peasantID, createSepiaAction(stripsAction, peasantID));
 		}
 
 		return sepiaAction;
@@ -142,12 +144,12 @@ public class PEAgent extends Agent {
 	 *            StripsAction
 	 * @return SEPIA representation of same action
 	 */
-	private Action createSepiaAction(StripsAction action) {
+	private Action createSepiaAction(StripsAction action, int peasantID) {
 
 		switch (action.getAction()) {
 		case "MOVE":
 			MoveAction move = (MoveAction) action;
-			Action moveAction = Action.createCompoundMove(move.getPeasant().getUnitID(), move.getBestPosition().x,
+			Action moveAction = Action.createCompoundMove(peasantID, move.getBestPosition().x,
 					move.getBestPosition().y);
 
 			System.out.println(moveAction.toString());
@@ -155,7 +157,7 @@ public class PEAgent extends Agent {
 
 		case "HARVEST":
 			HarvestAction harvest = (HarvestAction) action;
-			Action harvestAction = Action.createPrimitiveGather(harvest.getPeasant().getUnitID(),
+			Action harvestAction = Action.createPrimitiveGather(peasantID,
 					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
 
 			System.out.println(harvestAction.toString());
@@ -163,9 +165,8 @@ public class PEAgent extends Agent {
 
 		case "DEPOSIT":
 			DepositAction deposit = (DepositAction) action;
-			Action depositAction = Action.createPrimitiveDeposit(deposit.getPeasant().getUnitID(),
-					deposit.getPeasant().getPosition()
-							.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
+			Action depositAction = Action.createPrimitiveDeposit(peasantID, deposit.getPeasant().getPosition()
+					.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
 
 			System.out.println(depositAction.toString());
 			return depositAction;
