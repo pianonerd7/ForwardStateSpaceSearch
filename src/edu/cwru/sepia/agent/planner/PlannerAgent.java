@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -111,7 +112,8 @@ public class PlannerAgent extends Agent {
 			GameState curState = openList.get(0);
 			openList.remove(0);
 
-			for (GameState child : curState.generateChildren()) {
+			List<GameState> children = curState.generateChildren();
+			for (GameState child : children) {
 				if (curState.isGoal()) {
 					System.out.println("PATH FOUND \n");
 					return getPath(curState);

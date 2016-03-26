@@ -208,22 +208,72 @@ public class GameState implements Comparable<GameState> {
 	 *         this state.
 	 */
 	public double heuristic() {
-		int heuristic = 0;
+		double heuristic = 0;
 
-		// int peasantHoldingQuantity = peasant.getResourceQuantity();
+		String lastAction = parentAction.getAction();
 
-		switch (parentAction.getAction()) {
-		case "MOVE":
-			heuristic += 3;
-			break;
-		case "HARVEST":
-			heuristic += 4;
-			break;
-		case "DEPOSIT":
-			heuristic += 5;
-			break;
+		if (parentState.parentAction == null) {
+			switch (parentAction.getAction()) {
+			case "MOVE":
+				heuristic += 3;
+				break;
+			case "HARVEST":
+				heuristic += 4;
+				break;
+			case "DEPOSIT":
+				heuristic += 5;
+				break;
+			}
+			heuristic += this.myGold + this.myWood;
+			return heuristic;
 		}
-		heuristic += this.myGold + this.myWood;
+
+		String ancestorAction = parentState.parentAction.getAction();
+
+		switch (ancestorAction) {
+		case "MOVE":
+			switch (lastAction) {
+			case "HARVEST":
+
+				HarvestAction harvest = (HarvestAction) parentAction;
+
+				if (harvest.getResource().getName().equals("FOREST") && myWood < goalWood) {
+					heuristic += 100;
+				}
+
+				else if (harvest.getResource().getName().equals("GOLDMINE") && myGold < goalGold) {
+					heuristic += 100;
+				}
+				// else {
+				// heuristic -= 100;
+				// }
+				break;
+
+			case "DEPOSIT":
+				heuristic += 100;
+				break;
+			}
+			break;
+
+		case "HARVEST":
+			switch (lastAction) {
+			case "MOVE":
+				heuristic += 100;
+				break;
+			}
+			break;
+
+		case "DEPOSIT":
+			switch (lastAction) {
+			case "MOVE":
+				heuristic += 100;
+				break;
+			}
+			break;
+
+		}
+
+		// heuristic += this.myGold + this.myWood;
 		return heuristic;
 	}
 
