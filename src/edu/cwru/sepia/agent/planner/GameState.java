@@ -185,7 +185,11 @@ public class GameState implements Comparable<GameState> {
 
 			for (int i = 0; i < listChildren.get(0).size(); i++) {
 				for (int j = 0; j < listChildren.get(1).size(); j++) {
-					children.add(mergeState(listChildren.get(0).get(i), listChildren.get(1).get(j)));
+					if (listChildren.get(0).get(i).parentAction.get(0).getPeasant().getUnitID() == 0) {
+						children.add(mergeState(listChildren.get(0).get(i), listChildren.get(1).get(j)));
+					} else {
+						children.add(mergeState(listChildren.get(1).get(j), listChildren.get(0).get(i)));
+					}
 				}
 			}
 		}
@@ -202,32 +206,65 @@ public class GameState implements Comparable<GameState> {
 		StripsAction action1 = state1.parentAction.get(0);
 		StripsAction action2 = state2.parentAction.get(1);
 
+		Peasant peasant1 = null;
+		Peasant peasant2 = null;
+
 		String action1Name = action1.getAction();
 		String action2Name = action2.getAction();
 
-		ArrayList<StripsAction> action = new ArrayList<StripsAction>();
+		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
+		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
+		ArrayList<Forest> newForests = new ArrayList<Forest>();
+		ArrayList<GoldMine> newGoldMines = new ArrayList<GoldMine>();
+		TownHall newTownHall = null;
+
+		int newCost = 0;
+
+		for (Peasant peasant : state1.peasants) {
+			if (peasant.getUnitID() == action1.getPeasant().getUnitID()) {
+				peasant1 = peasant;
+			}
+		}
+
+		for (Peasant peasant : state2.peasants) {
+			if (peasant.getUnitID() == action2.getPeasant().getUnitID()) {
+				peasant2 = peasant;
+			}
+		}
+
+		newAction.add(action1);
+		newAction.add(action2);
+		newPeasants.add(peasant1);
+		newPeasants.add(peasant2);
 
 		switch (action1Name) {
 		case ("MOVE"):
-
+			newCost += state1.cost;
 			break;
 		case ("HARVEST"):
+			newCost += 1;
 			break;
 		case ("DEPOSIT"):
+			newCost += 1;
+
 			break;
 		case ("CREATE"):
+			newCost += 1;
 			break;
 		}
 
 		switch (action2Name) {
 		case ("MOVE"):
-
+			newCost += state2.cost;
 			break;
 		case ("HARVEST"):
+			newCost += 1;
 			break;
 		case ("DEPOSIT"):
+			newCost += 1;
 			break;
 		case ("CREATE"):
+			newCost += 1;
 			break;
 		}
 
