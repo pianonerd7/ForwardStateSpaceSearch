@@ -85,7 +85,9 @@ public class MoveAction implements StripsAction {
 			}
 		}
 
-		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
+		ArrayList<StripsAction> action = new ArrayList<StripsAction>();
+		action.add(this);
+		GameState newState = new GameState(action, state, newPeasants, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState(), cost, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
@@ -95,10 +97,6 @@ public class MoveAction implements StripsAction {
 
 	public Peasant getPeasant() {
 		return peasant;
-	}
-
-	public void setPeasant(Peasant peasant) {
-		this.peasant = peasant;
 	}
 
 	public Position getBestPosition() {
@@ -119,6 +117,6 @@ public class MoveAction implements StripsAction {
 	}
 
 	public String toString() {
-		return "[" + "MOVE to " + this.bestPosition.toString() + "]";
+		return "[" + " PEASANT ID: " + this.peasant.getUnitID() + ", MOVE to " + this.bestPosition.toString() + "]";
 	}
 }

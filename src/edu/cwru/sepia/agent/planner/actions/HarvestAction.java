@@ -75,7 +75,9 @@ public class HarvestAction implements StripsAction {
 			newGoldMines.add(newGoldMine);
 		}
 
-		GameState newState = new GameState(this, state, newPeasants, newForests, newGoldMines, state.getTownHall(),
+		ArrayList<StripsAction> action = new ArrayList<StripsAction>();
+		action.add(this);
+		GameState newState = new GameState(action, state, newPeasants, newForests, newGoldMines, state.getTownHall(),
 				state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(), state.getPlayerNum(),
 				state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(), state.isBuildPeasants(),
 				state.getTotalFoodOnMap());
@@ -125,10 +127,6 @@ public class HarvestAction implements StripsAction {
 		return peasant;
 	}
 
-	public void setPeasant(Peasant peasant) {
-		this.peasant = peasant;
-	}
-
 	public MapObject getResource() {
 		return resource;
 	}
@@ -143,7 +141,8 @@ public class HarvestAction implements StripsAction {
 	}
 
 	public String toString() {
-		return "[" + "HARVEST from " + resource.getPosition().toString() + "]";
+		return "[" + " PEASANT ID: " + this.peasant.getUnitID() + ", HARVEST from " + resource.getPosition().toString()
+				+ "]";
 	}
 
 }

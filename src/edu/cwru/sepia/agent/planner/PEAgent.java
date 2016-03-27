@@ -10,6 +10,7 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.ActionFeedback;
 import edu.cwru.sepia.action.ActionResult;
 import edu.cwru.sepia.agent.Agent;
+import edu.cwru.sepia.agent.planner.actions.CreateAction;
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
 import edu.cwru.sepia.agent.planner.actions.HarvestAction;
 import edu.cwru.sepia.agent.planner.actions.MoveAction;
@@ -171,6 +172,12 @@ public class PEAgent extends Agent {
 			System.out.println(depositAction.toString());
 			return depositAction;
 
+		case "CREATE":
+			CreateAction create = (CreateAction) action;
+			Action createAction = Action.createPrimitiveProduction(this.townhallId, this.peasantTemplateId);
+
+			System.out.println(create.toString());
+			return createAction;
 		default:
 			return null;
 

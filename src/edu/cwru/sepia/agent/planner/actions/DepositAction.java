@@ -51,7 +51,9 @@ public class DepositAction implements StripsAction {
 			}
 		}
 
-		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
+		ArrayList<StripsAction> action = new ArrayList<StripsAction>();
+		action.add(this);
+		GameState newState = new GameState(action, state, newPeasants, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
@@ -69,16 +71,12 @@ public class DepositAction implements StripsAction {
 		return peasant;
 	}
 
-	public void setPeasant(Peasant peasant) {
-		this.peasant = peasant;
-	}
-
 	@Override
 	public String getAction() {
 		return "DEPOSIT";
 	}
 
 	public String toString() {
-		return "[" + "DEPOSIT, I came from" + peasant.getPosition().toString() + "]";
+		return "[" + " PEASANT ID: " + this.peasant.getUnitID() + ", DEPOSIT " + peasant.getPosition().toString() + "]";
 	}
 }

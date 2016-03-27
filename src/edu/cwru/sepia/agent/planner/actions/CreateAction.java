@@ -22,25 +22,31 @@ public class CreateAction implements StripsAction {
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
 
 		for (Peasant statePeasant : state.getPeasants()) {
-			if (statePeasant.getUnitID() == this.peasant.getUnitID()) {
-				newPeasants.add(statePeasant);
-			}
+			newPeasants.add(statePeasant);
 		}
 
 		for (Position pos : state.getTownHall().getPosition().getAdjacentPositions()) {
 
 			if (pos.inBounds(state.getState().getXExtent(), state.getState().getYExtent())
 					&& !state.getState().isResourceAt(pos.x, pos.y)) {
-				newPeasants.add(new Peasant(null, 0, new Position(pos.x, pos.y), state.getPeasants().size()));
+				this.peasant = new Peasant(null, 0, new Position(pos.x, pos.y), state.getPeasants().size());
+				newPeasants.add(peasant);
 			}
 		}
 
-		GameState newState = new GameState(this, state, newPeasants, state.getForests(), state.getGoldMines(),
+		ArrayList<StripsAction> action = new ArrayList<StripsAction>();
+		action.add(this);
+		GameState newState = new GameState(action, state, newPeasants, state.getForests(), state.getGoldMines(),
 				state.getTownHall(), state.getGoalWood(), state.getGoalGold(), state.getMyWood(), state.getMyGold(),
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
 		return newState;
+	}
+
+	@Override
+	public Peasant getPeasant() {
+		return peasant;
 	}
 
 	@Override
