@@ -146,8 +146,11 @@ public class PlannerAgent extends Agent {
 		while (child != null) {
 			if (child.getParentAction() != null) {
 				System.out.println(child.getParentAction().toString());
+
+				for (StripsAction action : child.getParentAction()) {
+					actions.add(action);
+				}
 			}
-			actions.add(child.getParentAction());
 			child = child.getParentState();
 		}
 
