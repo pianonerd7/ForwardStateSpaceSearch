@@ -55,7 +55,7 @@ public class GameState implements Comparable<GameState> {
 	private int playerNum;
 	private State.StateView state;
 
-	private int cost = 0;
+	private int myCost = 0;
 
 	/**
 	 * Construct a GameState from a stateview object. This is used to construct
@@ -131,7 +131,7 @@ public class GameState implements Comparable<GameState> {
 		this.myGold = myGold;
 		this.playerNum = playerNum;
 		this.state = state;
-		this.cost = costToState;
+		this.myCost = costToState;
 		this.totalWoodOnMap = totalWoodOnMap;
 		this.totalGoldOnMap = totalGoldOnMap;
 		this.buildPeasants = buildPeasants;
@@ -216,9 +216,12 @@ public class GameState implements Comparable<GameState> {
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
 		ArrayList<Forest> newForests = new ArrayList<Forest>();
 		ArrayList<GoldMine> newGoldMines = new ArrayList<GoldMine>();
-		TownHall newTownHall = null;
+		TownHall newTownHall = state1.getTownHall();
 
-		int newCost = 0;
+		int newMyWood = state1.getMyWood();
+		int newMyGold = state1.getMyGold();
+
+		int newCost = state1.getMyCost();
 
 		for (Peasant peasant : state1.peasants) {
 			if (peasant.getUnitID() == action1.getPeasant().getUnitID()) {
@@ -232,39 +235,102 @@ public class GameState implements Comparable<GameState> {
 			}
 		}
 
+		for (Forest forest : state1.getForests()) {
+			newForests.add(forest);
+		}
+
+		for (GoldMine goldmine : state1.getGoldMines()) {
+			newGoldMines.add(goldmine);
+		}
+
 		newAction.add(action1);
 		newAction.add(action2);
 		newPeasants.add(peasant1);
 		newPeasants.add(peasant2);
 
-		switch (action1Name) {
-		case ("MOVE"):
-			newCost += state1.cost;
-			break;
-		case ("HARVEST"):
-			newCost += 1;
-			break;
-		case ("DEPOSIT"):
-			newCost += 1;
-
-			break;
-		case ("CREATE"):
-			newCost += 1;
-			break;
-		}
+		GameState newState = new GameState(newAction, this, newPeasants, newForests, newGoldMines, newTownHall,
+				state1.getGoalWood(), state1.getGoalGold(), newMyWood, newMyGold, state1.getPlayerNum(),
+				state1.getState(), newCost, state1.getTotalWoodOnMap(), state1.getTotalGoldOnMap(),
+				state1.isBuildPeasants(), state1.getTotalFoodOnMap());
 
 		switch (action2Name) {
 		case ("MOVE"):
-			newCost += state2.cost;
+			newState.setMyCost(newState.getMyCost() + state2.getMyCost());
 			break;
 		case ("HARVEST"):
 			newCost += 1;
+
+			HarvestAction harvest = (HarvestAction) action2;
+			MapObject resource = harvest.getResource();
+
+			if (resource.getName().equals("WOOD")) {
+				for (Forest forest : newForests) {
+					if (forest.getPosition().x == resource.getPosition().x
+							&& forest.getPosition().y == resource.getPosition().y) {
+
+						forest.setResourceQuantity(forest.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (forest.getResourceQuantity() <= 0) {
+							ArrayList<Forest> newForest = newState.getForests();
+							newForest.remove(forest);
+							newState.setForests(newForest);
+						}
+					}
+				}
+			}
+
+			else if (resource.getName().equals("GOLDMINE")) {
+				for (GoldMine goldmine : newState.getGoldMines()) {
+					if (goldmine.getPosition().x == resource.getPosition().x
+							&& goldmine.getPosition().y == resource.getPosition().y) {
+
+						goldmine.setResourceQuantity(goldmine.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (goldmine.getResourceQuantity() <= 0) {
+							ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
+							newGoldMine.remove(goldmine);
+							newState.setGoldMines(newGoldMine);
+						}
+
+						break;
+					}
+				}
+			}
+
 			break;
 		case ("DEPOSIT"):
 			newCost += 1;
+
+			DepositAction deposit = (DepositAction) action2;
+
+			if (deposit.getPeasant().getHoldingObject().toString().equals("WOOD")) {
+				newState.setMyWood(newState.getMyWood() + deposit.getPeasant().getResourceQuantity());
+			} else if (deposit.getPeasant().getHoldingObject().toString().equals("GOLD")) {
+				newState.setMyGold(newState.getMyGold() + deposit.getPeasant().getResourceQuantity());
+			}
 			break;
+
 		case ("CREATE"):
 			newCost += 1;
+
+			ArrayList<Peasant> temp = state2.getPeasants();
+			for (Peasant newP : newState.getPeasants()) {
+				for (int j = 0; j < temp.size(); j++) {
+					if (newP.getUnitID() == temp.get(j).getUnitID()) {
+						temp.remove(j);
+					}
+				}
+			}
+			ArrayList<Peasant> peasants = newState.getPeasants();
+			peasants.add(temp.get(0));
+			newState.setPeasants(peasants);
+
 			break;
 		}
 
@@ -660,6 +726,14 @@ public class GameState implements Comparable<GameState> {
 
 	public void setTotalFoodOnMap(int totalFoodOnMap) {
 		this.totalFoodOnMap = totalFoodOnMap;
+	}
+
+	public void setMyCost(int cost) {
+		this.myCost = cost;
+	}
+
+	public int getMyCost() {
+		return this.myCost;
 	}
 
 	public String toString() {
