@@ -9,6 +9,7 @@ import java.util.Stack;
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.ActionFeedback;
 import edu.cwru.sepia.action.ActionResult;
+import edu.cwru.sepia.action.ActionType;
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.agent.planner.actions.CreateAction;
 import edu.cwru.sepia.agent.planner.actions.DepositAction;
@@ -39,6 +40,7 @@ public class PEAgent extends Agent {
 	private int stripsNewPId = -1;
 	// integer = unit id, position = desired dest.
 	private Map<Integer, Position> desiredDestination = new HashMap<Integer, Position>();
+	private Map<Integer, Action> desiredAction = new HashMap<Integer, Action>();
 
 	private Unit.UnitView townHall;
 
@@ -130,20 +132,24 @@ public class PEAgent extends Agent {
 			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
 
 			if (lastAction.get(peasantID) != null) {
-
 				if (lastAction.get(peasantID).getFeedback() == ActionFeedback.FAILED) {
-					Position desiredPos = desiredDestination.get(peasantID);
+					if (lastAction.get(peasantID).getAction().getType() == ActionType.COMPOUNDMOVE) {
+						Position desiredPos = desiredDestination.get(peasantID);
+						for (Position pos : desiredPos.getAdjacentPositions()) {
 
-					for (Position pos : desiredPos.getAdjacentPositions()) {
-
-						if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
-								&& !stateView.isResourceAt(pos.x, pos.y)) {
-							Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
-							sepiaAction.put(peasantID, moveAction);
-							plan.push(stripsAction);
-							return sepiaAction;
+							if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
+									&& !stateView.isResourceAt(pos.x, pos.y)) {
+								Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
+								sepiaAction.put(peasantID, moveAction);
+								plan.push(stripsAction);
+								return sepiaAction;
+							}
 						}
 					}
+					if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
+						sepiaAction.put(peasantID, desiredAction.get(peasantID));
+					}
+					if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
 				}
 
 				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
@@ -156,9 +162,13 @@ public class PEAgent extends Agent {
 			}
 
 			if (stripsAction.getAction().equals("CREATE")) {
-				sepiaAction.put(this.townhallId, createSepiaAction(stripsAction, peasantID));
+				Action action = createSepiaAction(stripsAction, peasantID);
+				sepiaAction.put(this.townhallId, action);
+				this.desiredAction.put(this.townhallId, action);
 			} else {
-				sepiaAction.put(peasantID, createSepiaAction(stripsAction, peasantID));
+				Action action = createSepiaAction(stripsAction, peasantID);
+				sepiaAction.put(peasantID, action);
+				this.desiredAction.put(peasantID, action);
 			}
 		}
 
