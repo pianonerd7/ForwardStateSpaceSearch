@@ -187,9 +187,15 @@ public class GameState implements Comparable<GameState> {
 			for (GameState gamestate1 : listChildren.get(0)) {
 				for (GameState gamestate2 : listChildren.get(1)) {
 					if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0) {
-						children.add(mergeState(gamestate1, gamestate2));
+						GameState newChild = mergeState(gamestate1, gamestate2);
+						if (newChild != null) {
+							children.add(newChild);
+						}
 					} else {
-						children.add(mergeState(gamestate1, gamestate2));
+						GameState newChild = mergeState(gamestate1, gamestate2);
+						if (newChild != null) {
+							children.add(newChild);
+						}
 					}
 				}
 			}
@@ -277,6 +283,10 @@ public class GameState implements Comparable<GameState> {
 					if (forest.getPosition().x == resource.getPosition().x
 							&& forest.getPosition().y == resource.getPosition().y) {
 
+						if (forest.getResourceQuantity() == 0) {
+							return null;
+						}
+
 						forest.setResourceQuantity(forest.getResourceQuantity() - 100);
 
 						// If the amount of wood at that forest is less than 0,
@@ -295,6 +305,10 @@ public class GameState implements Comparable<GameState> {
 				for (GoldMine goldmine : newState.getGoldMines()) {
 					if (goldmine.getPosition().x == resource.getPosition().x
 							&& goldmine.getPosition().y == resource.getPosition().y) {
+
+						if (goldmine.getResourceQuantity() == 0) {
+							return null;
+						}
 
 						goldmine.setResourceQuantity(goldmine.getResourceQuantity() - 100);
 
