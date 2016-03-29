@@ -186,6 +186,46 @@ public class GameState implements Comparable<GameState> {
 
 			for (GameState gamestate1 : listChildren.get(0)) {
 				for (GameState gamestate2 : listChildren.get(1)) {
+
+					StripsAction action1 = gamestate1.getParentAction().get(0);
+					StripsAction action2 = gamestate2.getParentAction().get(0);
+					Position p1 = action1.getPeasant().getPosition();
+					Position p2 = action2.getPeasant().getPosition();
+
+					if (p1.x == p2.x && p1.y == p2.y) {
+						String actionName1 = action1.getAction();
+						String actionName2 = action2.getAction();
+
+						if (actionName1.equals(actionName2)) {
+							switch (actionName1) {
+							case "MOVE":
+								MoveAction move = (MoveAction) action2;
+
+								Position bestNeighbor = new Position(Integer.MAX_VALUE, Integer.MAX_VALUE);
+								for (Position pos : move.getMapObject().getPosition().getAdjacentPositions()) {
+
+									if (pos.x == p1.x && pos.y == p1.y) {
+										continue;
+									}
+
+									if (pos.inBounds(state.getXExtent(), state.getYExtent())
+											&& !state.isResourceAt(pos.x, pos.y)) {
+										if (p2.euclideanDistance(pos) < p2.euclideanDistance(bestNeighbor)) {
+											bestNeighbor = new Position(pos.x, pos.y);
+										}
+									}
+								}
+								action2.getPeasant().setPosition(new Position(bestNeighbor.x, bestNeighbor.y));
+								move.setBestPosition(bestNeighbor);
+								// children.get(i).getParentAction().remove(0);
+								// children.get(i).getParentAction().add(move);
+								break;
+							case "HARVEST":
+								HarvestAction harvest = (HarvestAction) action2;
+							}
+						}
+					}
+
 					if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0) {
 						GameState newChild = mergeState(gamestate1, gamestate2);
 						if (newChild != null) {
@@ -211,7 +251,9 @@ public class GameState implements Comparable<GameState> {
 					// continue;
 					// }
 
-					if (children.get(i).getParentAction().get(0).getAction().equals("MOVE")) {
+					String action = children.get(i).getParentAction().get(0).getAction();
+					switch (action) {
+					case "MOVE":
 						MoveAction move = (MoveAction) children.get(i).getParentAction().get(0);
 
 						Position bestNeighbor = new Position(Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -232,17 +274,23 @@ public class GameState implements Comparable<GameState> {
 						move.setBestPosition(bestNeighbor);
 						// children.get(i).getParentAction().remove(0);
 						// children.get(i).getParentAction().add(move);
-						continue;
+						break;
+					case "HARVEST":
+						HarvestAction harvest = (HarvestAction) children.get(i).getParentAction().get(0);
+
 					}
 				}
 			}
 		}
 
-		else if (listChildren.size() == 3) {
+		else if (listChildren.size() == 3)
+
+		{
 
 		}
 
 		return children;
+
 	}
 
 	private GameState mergeState(GameState state1, GameState state2) {
