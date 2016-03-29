@@ -112,7 +112,10 @@ public class PlannerAgent extends Agent {
 			GameState curState = openList.get(0);
 			openList.remove(0);
 
+			System.out.println(curState.getParentAction().toString());
+
 			List<GameState> children = curState.generateChildren();
+			Collections.sort(curState.generateChildren(), Collections.reverseOrder());
 			// openList = new ArrayList<GameState>();
 			for (GameState child : children) {
 				if (curState.isGoal()) {
@@ -132,7 +135,7 @@ public class PlannerAgent extends Agent {
 	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList) {
 
 		for (GameState node : openList) {
-			if (neighbor.heuristic() <= node.heuristic()) {
+			if (neighbor.heuristic() < node.heuristic()) {
 				return false;
 			}
 		}

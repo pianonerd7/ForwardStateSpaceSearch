@@ -279,10 +279,11 @@ public class GameState implements Comparable<GameState> {
 			MapObject resource = harvest.getResource();
 
 			if (resource.getName().equals("FOREST")) {
-				for (Forest forest : newForests) {
+				for (int i = 0; i < newState.getForests().size(); i++) {
+					Forest forest = newState.getForests().get(i);
+
 					if (forest.getPosition().x == resource.getPosition().x
 							&& forest.getPosition().y == resource.getPosition().y) {
-
 						if (forest.getResourceQuantity() == 0) {
 							return null;
 						}
@@ -297,12 +298,16 @@ public class GameState implements Comparable<GameState> {
 							newForest.remove(forest);
 							newState.setForests(newForest);
 						}
+
+						break;
 					}
 				}
 			}
 
 			else if (resource.getName().equals("GOLDMINE")) {
-				for (GoldMine goldmine : newState.getGoldMines()) {
+				for (int i = 0; i < newState.getGoldMines().size(); i++) {
+					GoldMine goldmine = newState.getGoldMines().get(i);
+
 					if (goldmine.getPosition().x == resource.getPosition().x
 							&& goldmine.getPosition().y == resource.getPosition().y) {
 
