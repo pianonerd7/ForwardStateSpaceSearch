@@ -273,12 +273,12 @@ public class GameState implements Comparable<GameState> {
 			newState.setMyCost(newState.getMyCost() + state2.getMyCost());
 			break;
 		case ("HARVEST"):
-			newCost += 1;
+			newState.setMyCost(newState.getMyCost() + 1);
 
 			HarvestAction harvest = (HarvestAction) action2;
 			MapObject resource = harvest.getResource();
 
-			if (resource.getName().equals("WOOD")) {
+			if (resource.getName().equals("FOREST")) {
 				for (Forest forest : newForests) {
 					if (forest.getPosition().x == resource.getPosition().x
 							&& forest.getPosition().y == resource.getPosition().y) {
@@ -328,7 +328,7 @@ public class GameState implements Comparable<GameState> {
 
 			break;
 		case ("DEPOSIT"):
-			newCost += 1;
+			newState.setMyCost(newState.getMyCost() + 1);
 
 			DepositAction deposit = (DepositAction) action2;
 
@@ -340,7 +340,7 @@ public class GameState implements Comparable<GameState> {
 			break;
 
 		case ("CREATE"):
-			newCost += 1;
+			newState.setMyCost(newState.getMyCost() + 1);
 
 			ArrayList<Peasant> temp = state2.getPeasants();
 			for (Peasant newP : newState.getPeasants()) {
