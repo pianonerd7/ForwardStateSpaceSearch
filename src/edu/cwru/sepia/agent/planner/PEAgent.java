@@ -36,6 +36,7 @@ public class PEAgent extends Agent {
 	private Map<Integer, Integer> peasantIdMap;
 	private int townhallId;
 	private int peasantTemplateId;
+	private int stripsNewPId = -1;
 
 	private Unit.UnitView townHall;
 
@@ -119,6 +120,9 @@ public class PEAgent extends Agent {
 		int peasantID = -1;
 
 		if (!plan.empty()) {
+
+			checkCreatePeasant(stateView);
+
 			StripsAction stripsAction = plan.pop();
 			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
 
@@ -132,10 +136,31 @@ public class PEAgent extends Agent {
 				return null;
 			}
 
-			sepiaAction.put(peasantID, createSepiaAction(stripsAction, peasantID));
+			if (stripsAction.getAction().equals("CREATE")) {
+				sepiaAction.put(this.townhallId, createSepiaAction(stripsAction, peasantID));
+			} else {
+				sepiaAction.put(peasantID, createSepiaAction(stripsAction, peasantID));
+			}
 		}
 
 		return sepiaAction;
+	}
+
+	private void checkCreatePeasant(State.StateView stateView) {
+		for (int unitId : stateView.getUnitIds(playernum)) {
+			Unit.UnitView unit = stateView.getUnit(unitId);
+			String unitType = unit.getTemplateView().getName().toLowerCase();
+
+			if (unitType.equals("peasant")) {
+
+				for (Integer key : peasantIdMap.keySet()) {
+					if (stripsNewPId != -1 && peasantIdMap.get(key) != unitId) {
+						peasantIdMap.put(stripsNewPId, unitId);
+						stripsNewPId = -1;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -176,6 +201,8 @@ public class PEAgent extends Agent {
 			CreateAction create = (CreateAction) action;
 			Action createAction = Action.createPrimitiveProduction(this.townhallId, this.peasantTemplateId);
 
+			stripsNewPId = create.getCreatedPeasant().getUnitID();
+
 			System.out.println(create.toString());
 			return createAction;
 		default:
@@ -202,6 +229,10 @@ public class PEAgent extends Agent {
 
 			return deposit.getPeasant().getUnitID();
 
+		case "CREATE":
+			CreateAction create = (CreateAction) action;
+
+			return create.getPeasant().getUnitID();
 		default:
 			return -1;
 		}

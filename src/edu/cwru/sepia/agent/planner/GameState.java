@@ -331,7 +331,7 @@ public class GameState implements Comparable<GameState> {
 			ArrayList<Peasant> temp = state2.getPeasants();
 			for (Peasant newP : newState.getPeasants()) {
 				for (int j = 0; j < temp.size(); j++) {
-					if (newP.getUnitID() == temp.get(j).getUnitID()) {
+					if (newP != null && newP.getUnitID() == temp.get(j).getUnitID()) {
 						temp.remove(j);
 					}
 				}
@@ -370,19 +370,6 @@ public class GameState implements Comparable<GameState> {
 		// If peasant isn't holding anything, it should move to a resource, or
 		// harvest at a resource
 		if (peasant.getIsEmpty()) {
-			for (Forest forest : forests) {
-				HarvestAction harvest = new HarvestAction(peasant, forest);
-
-				if (harvest.preconditionsMet(this)) {
-					children.add(harvest.apply(this));
-				}
-
-				if (parentAction == null || actionOfInterest.getAction() != "MOVE") {
-					MoveAction move = new MoveAction(peasant, forest, forest.getPosition());
-					children.add(move.apply(this));
-				}
-			}
-
 			for (GoldMine goldmine : goldMines) {
 				HarvestAction harvest = new HarvestAction(peasant, goldmine);
 
@@ -392,6 +379,19 @@ public class GameState implements Comparable<GameState> {
 
 				if (parentAction == null || actionOfInterest.getAction() != "MOVE") {
 					MoveAction move = new MoveAction(peasant, goldmine, goldmine.getPosition());
+					children.add(move.apply(this));
+				}
+			}
+
+			for (Forest forest : forests) {
+				HarvestAction harvest = new HarvestAction(peasant, forest);
+
+				if (harvest.preconditionsMet(this)) {
+					children.add(harvest.apply(this));
+				}
+
+				if (parentAction == null || actionOfInterest.getAction() != "MOVE") {
+					MoveAction move = new MoveAction(peasant, forest, forest.getPosition());
 					children.add(move.apply(this));
 				}
 			}
@@ -451,6 +451,7 @@ public class GameState implements Comparable<GameState> {
 		}
 
 		if (lastAction.size() == 2) {
+			heuristic += 1000;
 			StripsAction lAct1 = lastAction.get(0);
 			StripsAction lAct2 = lastAction.get(1);
 
@@ -495,7 +496,7 @@ public class GameState implements Comparable<GameState> {
 				HarvestAction harvest = (HarvestAction) parentAction;
 
 				if (harvest.getResource().getName().equals("FOREST")) {
-					if (myWood <= goalWood) {
+					if (myWood < goalWood) {
 						heuristic += 200;
 					}
 					if (myWood > goalWood) {
@@ -504,8 +505,8 @@ public class GameState implements Comparable<GameState> {
 				}
 
 				else if (harvest.getResource().getName().equals("GOLDMINE")) {
-					if (myGold <= goalGold) {
-						heuristic += 200;
+					if (myGold < goalGold) {
+						heuristic += 400;
 					}
 
 					if (myGold > goalGold) {
@@ -539,7 +540,7 @@ public class GameState implements Comparable<GameState> {
 				switch (moveToResourceType) {
 				case "FOREST":
 
-					if (myWood <= goalWood) {
+					if (myWood < goalWood) {
 						heuristic += 200;
 					}
 					if (myWood > goalWood) {
@@ -548,7 +549,7 @@ public class GameState implements Comparable<GameState> {
 					break;
 				case "GOLDMINE":
 
-					if (myGold <= goalGold) {
+					if (myGold < goalGold) {
 						heuristic += 400;
 					}
 
@@ -586,7 +587,7 @@ public class GameState implements Comparable<GameState> {
 				switch (moveToResourceType) {
 				case "FOREST":
 
-					if (myWood <= goalWood) {
+					if (myWood < goalWood) {
 						heuristic += 200;
 					}
 					if (myWood > goalWood) {
@@ -595,7 +596,7 @@ public class GameState implements Comparable<GameState> {
 					break;
 				case "GOLDMINE":
 
-					if (myGold <= goalGold) {
+					if (myGold < goalGold) {
 						heuristic += 400;
 					}
 
