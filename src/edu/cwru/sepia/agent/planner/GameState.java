@@ -166,9 +166,10 @@ public class GameState implements Comparable<GameState> {
 		List<ArrayList<GameState>> prelimaryChildren = new ArrayList<ArrayList<GameState>>();
 
 		for (int i = 0; i < this.peasants.size(); i++) {
-			ArrayList<GameState> individualChildren = getChildren(peasants.get(i));
-
-			prelimaryChildren.add(individualChildren);
+			ArrayList<GameState> children = getChildren(peasants.get(i));
+			if (children != null) {
+				prelimaryChildren.add(children);
+			}
 		}
 
 		return mergeChildren(prelimaryChildren);
@@ -187,58 +188,6 @@ public class GameState implements Comparable<GameState> {
 			for (GameState gamestate1 : listChildren.get(0)) {
 				for (GameState gamestate2 : listChildren.get(1)) {
 
-					// StripsAction action1 =
-					// gamestate1.getParentAction().get(0);
-					// StripsAction action2 =
-					// gamestate2.getParentAction().get(0);
-					// Position p1 = action1.getPeasant().getPosition();
-					// Position p2 = action2.getPeasant().getPosition();
-					//
-					// if (p1.x == p2.x && p1.y == p2.y) {
-					// String actionName1 = action1.getAction();
-					// String actionName2 = action2.getAction();
-					//
-					// if (actionName1.equals(actionName2)) {
-					// switch (actionName1) {
-					// case "MOVE":
-					// MoveAction move = (MoveAction) action2;
-					//
-					// Position bestNeighbor = new Position(Integer.MAX_VALUE,
-					// Integer.MAX_VALUE);
-					// for (Position pos :
-					// move.getMapObject().getPosition().getAdjacentPositions())
-					// {
-					//
-					// if (pos.x == p1.x && pos.y == p1.y) {
-					// continue;
-					// }
-					//
-					// if (pos.inBounds(state.getXExtent(), state.getYExtent())
-					// && !state.isResourceAt(pos.x, pos.y)) {
-					// if (p2.euclideanDistance(pos) <
-					// p2.euclideanDistance(bestNeighbor)) {
-					// bestNeighbor = new Position(pos.x, pos.y);
-					// }
-					// }
-					// }
-					// action2.getPeasant().setPosition(new
-					// Position(bestNeighbor.x, bestNeighbor.y));
-					// move.setBestPosition(bestNeighbor);
-					// // children.get(i).getParentAction().remove(0);
-					// // children.get(i).getParentAction().add(move);
-					// break;
-					// case "HARVEST":
-					// children.add(gamestate1);
-					// children.add(gamestate2);
-					// break;
-					// case "DEPOSIT":
-					// children.add(gamestate1);
-					// children.add(gamestate2);
-					// break;
-					// }
-					// }
-					// }
-
 					if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0) {
 						GameState newChild = mergeState(gamestate1, gamestate2);
 						if (newChild != null) {
@@ -253,51 +202,18 @@ public class GameState implements Comparable<GameState> {
 				}
 			}
 
-			for (int i = 0; i < children.size(); i++) {
-				Position p1 = children.get(i).getPeasants().get(0).getPosition();
-				Position p2 = children.get(i).getPeasants().get(1).getPosition();
-
-				if (p1.x == p2.x && p1.y == p2.y) {
-
-					if (children.size() > 1) {
-						children.remove(i);
-						continue;
-					}
-
-					// String action =
-					// children.get(i).getParentAction().get(0).getAction();
-					// switch (action) {
-					// case "MOVE":
-					// MoveAction move = (MoveAction)
-					// children.get(i).getParentAction().get(0);
-					//
-					// Position bestNeighbor = new Position(Integer.MAX_VALUE,
-					// Integer.MAX_VALUE);
-					// for (Position pos :
-					// move.getMapObject().getPosition().getAdjacentPositions())
-					// {
-					//
-					// if (pos.x == p1.x && pos.y == p1.y) {
-					// continue;
-					// }
-					//
-					// if (pos.inBounds(state.getXExtent(), state.getYExtent())
-					// && !state.isResourceAt(pos.x, pos.y)) {
-					// if (p2.euclideanDistance(pos) <
-					// p2.euclideanDistance(bestNeighbor)) {
-					// bestNeighbor = new Position(pos.x, pos.y);
-					// }
-					// }
-					// }
-					// children.get(i).getPeasants().get(1).setPosition(new
-					// Position(bestNeighbor.x, bestNeighbor.y));
-					// move.setBestPosition(bestNeighbor);
-					// // children.get(i).getParentAction().remove(0);
-					// // children.get(i).getParentAction().add(move);
-					// break;
-					// }
-				}
-			}
+			// for (int i = 0; i < children.size(); i++) {
+			// Position p1 = children.get(i).getPeasants().get(0).getPosition();
+			// Position p2 = children.get(i).getPeasants().get(1).getPosition();
+			//
+			// if (p1.x == p2.x && p1.y == p2.y) {
+			//
+			// if (children.size() > 1) {
+			// children.remove(i);
+			// continue;
+			// }
+			// }
+			// }
 		}
 
 		else if (listChildren.size() == 3)
@@ -520,7 +436,7 @@ public class GameState implements Comparable<GameState> {
 				children.add(deposit.apply(this));
 			}
 
-			if (parentAction == null || actionOfInterest.getAction() != "MOVE") {
+			if (parentAction == null || actionOfInterest == null || actionOfInterest.getAction() != "MOVE") {
 				MoveAction move = new MoveAction(peasant, this.townHall, townHall.getPosition());
 				children.add(move.apply(this));
 			}

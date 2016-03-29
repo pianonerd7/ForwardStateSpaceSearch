@@ -41,6 +41,7 @@ public class PEAgent extends Agent {
 	// integer = unit id, position = desired dest.
 	private Map<Integer, Position> desiredDestination = new HashMap<Integer, Position>();
 	private Map<Integer, Action> desiredAction = new HashMap<Integer, Action>();
+	private Map<Integer, Position> desiredResource = new HashMap<Integer, Position>();
 
 	private Unit.UnitView townHall;
 
@@ -134,6 +135,7 @@ public class PEAgent extends Agent {
 			if (lastAction.get(peasantID) != null) {
 				if (lastAction.get(peasantID).getFeedback() == ActionFeedback.FAILED) {
 					if (lastAction.get(peasantID).getAction().getType() == ActionType.COMPOUNDMOVE) {
+						System.out.println("MOVE ERROR");
 						Position desiredPos = desiredDestination.get(peasantID);
 						for (Position pos : desiredPos.getAdjacentPositions()) {
 
@@ -145,13 +147,35 @@ public class PEAgent extends Agent {
 								return sepiaAction;
 							}
 						}
-					}
-					if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
-						sepiaAction.put(peasantID, desiredAction.get(peasantID));
-					}
-					if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
-				}
+					} else if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
+						System.out.println("GATHER ERROR");
 
+						Action harvestAction = Action.createPrimitiveGather(peasantID,
+								new Position(stateView.getUnit(peasantID).getXPosition(),
+										stateView.getUnit(peasantID).getYPosition())
+												.getDirection(this.desiredResource.get(peasantID)));
+
+						sepiaAction.put(peasantID, harvestAction);
+						plan.push(stripsAction);
+						return sepiaAction;
+
+					} else if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEDEPOSIT) {
+						System.out.println("DEPOSIT ERROR");
+						// System.out.println("ID: " + peasantID + " , " +
+						// stateView.getUnit(peasantID).getXPosition()
+						// + ", " +
+						// stateView.getUnit(peasantID).getYPosition());
+
+						Action depositAction = Action.createPrimitiveDeposit(peasantID,
+								new Position(stateView.getUnit(peasantID).getXPosition(),
+										stateView.getUnit(peasantID).getYPosition())
+												.getDirection(new Position(this.townHall.getXPosition(),
+														this.townHall.getYPosition())));
+						sepiaAction.put(peasantID, depositAction);
+						plan.push(stripsAction);
+						return sepiaAction;
+					}
+				}
 				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
 			}
 
@@ -217,6 +241,7 @@ public class PEAgent extends Agent {
 					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
 
 			desiredDestination.put(peasantID, harvest.getResource().getPosition());
+			desiredResource.put(peasantID, harvest.getResource().getPosition());
 			System.out.println(harvestAction.toString());
 			return harvestAction;
 
