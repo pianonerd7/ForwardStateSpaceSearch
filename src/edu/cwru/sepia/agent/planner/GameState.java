@@ -513,7 +513,7 @@ public class GameState implements Comparable<GameState> {
 					case "GOLDMINE":
 
 						if (myGold < goalGold) {
-							heuristic += 200;
+							heuristic += 400;
 						}
 
 						if (myGold > goalGold) {
@@ -560,7 +560,7 @@ public class GameState implements Comparable<GameState> {
 					case "GOLDMINE":
 
 						if (myGold < goalGold) {
-							heuristic += 200;
+							heuristic += 400;
 						}
 
 						if (myGold > goalGold) {
@@ -576,9 +576,90 @@ public class GameState implements Comparable<GameState> {
 
 		if (action.size() == 2) {
 
+			ArrayList<StripsAction> lastAction = parentAction;
+			StripsAction lAct1 = lastAction.get(0);
+			StripsAction lAct2 = lastAction.get(1);
+
+			ArrayList<StripsAction> ancestorAction = this.getParentState().getParentAction();
+			StripsAction aAct1 = ancestorAction.get(0);
+			StripsAction aAct2 = null;
+
+			if (ancestorAction.size() != 1) {
+				aAct2 = ancestorAction.get(1);
+			}
+
+			// This means that the ancestor just did a create action
+			if (aAct2 == null) {
+
+				switch (lAct1.getAction()) {
+				case "MOVE":
+
+					MoveAction moveAction = (MoveAction) parentAction.get(0);
+					String moveToResourceType = moveAction.getMapObject().getName();
+
+					switch (moveToResourceType) {
+					case "FOREST":
+
+						if (myWood < goalWood) {
+							heuristic += 200;
+						}
+						if (myWood > goalWood) {
+							heuristic -= 1000;
+						}
+						break;
+					case "GOLDMINE":
+
+						if (myGold < goalGold) {
+							heuristic += 400;
+						}
+
+						if (myGold > goalGold) {
+							heuristic -= 1000;
+						}
+						break;
+					}
+					break;
+				}
+
+				switch (lAct2.getAction()) {
+				case "MOVE":
+
+					MoveAction moveAction = (MoveAction) parentAction.get(0);
+					String moveToResourceType = moveAction.getMapObject().getName();
+
+					switch (moveToResourceType) {
+					case "FOREST":
+
+						if (myWood < goalWood) {
+							heuristic += 200;
+						}
+						if (myWood > goalWood) {
+							heuristic -= 1000;
+						}
+						break;
+					case "GOLDMINE":
+
+						if (myGold < goalGold) {
+							heuristic += 400;
+						}
+
+						if (myGold > goalGold) {
+							heuristic -= 1000;
+						}
+						break;
+					}
+					break;
+				}
+			}
+
+			else {
+
+			}
 		}
 
-		if (action.size() == 3) {
+		if (action.size() == 3)
+
+		{
 			System.out.println("three actions");
 		}
 
