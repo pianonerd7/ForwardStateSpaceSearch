@@ -203,8 +203,37 @@ public class GameState implements Comparable<GameState> {
 			for (int i = 0; i < children.size(); i++) {
 				Position p1 = children.get(i).getPeasants().get(0).getPosition();
 				Position p2 = children.get(i).getPeasants().get(1).getPosition();
+
 				if (p1.x == p2.x && p1.y == p2.y) {
-					children.remove(i);
+
+					// if (children.size() > 1) {
+					// children.remove(i);
+					// continue;
+					// }
+
+					if (children.get(i).getParentAction().get(0).getAction().equals("MOVE")) {
+						MoveAction move = (MoveAction) children.get(i).getParentAction().get(0);
+
+						Position bestNeighbor = new Position(Integer.MAX_VALUE, Integer.MAX_VALUE);
+						for (Position pos : move.getMapObject().getPosition().getAdjacentPositions()) {
+
+							if (pos.x == p1.x && pos.y == p1.y) {
+								continue;
+							}
+
+							if (pos.inBounds(state.getXExtent(), state.getYExtent())
+									&& !state.isResourceAt(pos.x, pos.y)) {
+								if (p2.euclideanDistance(pos) < p2.euclideanDistance(bestNeighbor)) {
+									bestNeighbor = new Position(pos.x, pos.y);
+								}
+							}
+						}
+						children.get(i).getPeasants().get(1).setPosition(new Position(bestNeighbor.x, bestNeighbor.y));
+						move.setBestPosition(bestNeighbor);
+						// children.get(i).getParentAction().remove(0);
+						// children.get(i).getParentAction().add(move);
+						continue;
+					}
 				}
 			}
 		}
@@ -544,7 +573,7 @@ public class GameState implements Comparable<GameState> {
 		case "HARVEST":
 			switch (lastAction) {
 			case "MOVE":
-				heuristic += 100;
+				heuristic += 500;
 				break;
 			}
 			break;

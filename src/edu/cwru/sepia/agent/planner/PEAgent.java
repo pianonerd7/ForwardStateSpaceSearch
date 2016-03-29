@@ -37,6 +37,8 @@ public class PEAgent extends Agent {
 	private int townhallId;
 	private int peasantTemplateId;
 	private int stripsNewPId = -1;
+	// integer = unit id, position = desired dest.
+	private Map<Integer, Position> desiredDestination = new HashMap<Integer, Position>();
 
 	private Unit.UnitView townHall;
 
@@ -117,6 +119,7 @@ public class PEAgent extends Agent {
 		boolean isPrevActionComplete = true;
 
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
+
 		int peasantID = -1;
 
 		if (!plan.empty()) {
@@ -127,6 +130,22 @@ public class PEAgent extends Agent {
 			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
 
 			if (lastAction.get(peasantID) != null) {
+
+				if (lastAction.get(peasantID).getFeedback() == ActionFeedback.FAILED) {
+					Position desiredPos = desiredDestination.get(peasantID);
+
+					for (Position pos : desiredPos.getAdjacentPositions()) {
+
+						if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
+								&& !stateView.isResourceAt(pos.x, pos.y)) {
+							Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
+							sepiaAction.put(peasantID, moveAction);
+							plan.push(stripsAction);
+							return sepiaAction;
+						}
+					}
+				}
+
 				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
 			}
 
@@ -178,6 +197,7 @@ public class PEAgent extends Agent {
 			Action moveAction = Action.createCompoundMove(peasantID, move.getBestPosition().x,
 					move.getBestPosition().y);
 
+			desiredDestination.put(peasantID, move.getMapObject().getPosition());
 			System.out.println(moveAction.toString());
 			return moveAction;
 
@@ -186,6 +206,7 @@ public class PEAgent extends Agent {
 			Action harvestAction = Action.createPrimitiveGather(peasantID,
 					harvest.getPeasant().getPosition().getDirection(harvest.getResource().getPosition()));
 
+			desiredDestination.put(peasantID, harvest.getResource().getPosition());
 			System.out.println(harvestAction.toString());
 			return harvestAction;
 
@@ -194,6 +215,7 @@ public class PEAgent extends Agent {
 			Action depositAction = Action.createPrimitiveDeposit(peasantID, deposit.getPeasant().getPosition()
 					.getDirection(new Position(this.townHall.getXPosition(), this.townHall.getYPosition())));
 
+			desiredDestination.put(peasantID, new Position(this.townHall.getXPosition(), this.townHall.getYPosition()));
 			System.out.println(depositAction.toString());
 			return depositAction;
 

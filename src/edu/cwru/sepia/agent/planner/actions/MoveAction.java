@@ -103,6 +103,10 @@ public class MoveAction implements StripsAction {
 		return bestPosition;
 	}
 
+	public void setBestPosition(Position position) {
+		this.bestPosition = position;
+	}
+
 	@Override
 	public String getAction() {
 		return "MOVE";

@@ -112,11 +112,14 @@ public class PlannerAgent extends Agent {
 			GameState curState = openList.get(0);
 			openList.remove(0);
 
-			System.out.println(curState.getParentAction().toString());
+			if (curState.getParentAction() != null) {
+				System.out.println(curState.getParentAction().toString());
+			}
 
 			List<GameState> children = curState.generateChildren();
-			Collections.sort(curState.generateChildren(), Collections.reverseOrder());
-			// openList = new ArrayList<GameState>();
+			// Collections.sort(curState.generateChildren(),
+			// Collections.reverseOrder());
+			openList = new ArrayList<GameState>();
 			for (GameState child : children) {
 				if (curState.isGoal()) {
 					System.out.println("PATH FOUND \n");
