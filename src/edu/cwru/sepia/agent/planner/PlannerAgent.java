@@ -107,7 +107,7 @@ public class PlannerAgent extends Agent {
 		openList.add(startState);
 
 		while (!openList.isEmpty()) {
-			Collections.sort(openList);
+			Collections.sort(openList, Collections.reverseOrder());
 
 			GameState curState = openList.get(0);
 			openList.remove(0);

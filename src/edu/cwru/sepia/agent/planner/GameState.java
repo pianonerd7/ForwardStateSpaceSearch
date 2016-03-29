@@ -184,13 +184,21 @@ public class GameState implements Comparable<GameState> {
 
 		if (listChildren.size() == 2) {
 
-			for (int i = 0; i < listChildren.get(0).size(); i++) {
-				for (int j = 0; j < listChildren.get(1).size(); j++) {
-					if (listChildren.get(0).get(i).parentAction.get(0).getPeasant().getUnitID() == 0) {
-						children.add(mergeState(listChildren.get(0).get(i), listChildren.get(1).get(j)));
+			for (GameState gamestate1 : listChildren.get(0)) {
+				for (GameState gamestate2 : listChildren.get(1)) {
+					if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0) {
+						children.add(mergeState(gamestate1, gamestate2));
 					} else {
-						children.add(mergeState(listChildren.get(1).get(j), listChildren.get(0).get(i)));
+						children.add(mergeState(gamestate1, gamestate2));
 					}
+				}
+			}
+
+			for (int i = 0; i < children.size(); i++) {
+				Position p1 = children.get(i).getPeasants().get(0).getPosition();
+				Position p2 = children.get(i).getPeasants().get(1).getPosition();
+				if (p1.x == p2.x && p1.y == p2.y) {
+					children.remove(i);
 				}
 			}
 		}
@@ -205,13 +213,12 @@ public class GameState implements Comparable<GameState> {
 	private GameState mergeState(GameState state1, GameState state2) {
 
 		StripsAction action1 = state1.parentAction.get(0);
-		StripsAction action2 = state2.parentAction.get(1);
+		StripsAction action2 = state2.parentAction.get(0);
+		String action1Name = action1.getAction();
+		String action2Name = action2.getAction();
 
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
-
-		String action1Name = action1.getAction();
-		String action2Name = action2.getAction();
 
 		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
@@ -234,6 +241,7 @@ public class GameState implements Comparable<GameState> {
 			if (peasant.getUnitID() == action2.getPeasant().getUnitID()) {
 				peasant2 = peasant;
 			}
+
 		}
 
 		for (Forest forest : state1.getForests()) {
@@ -335,7 +343,7 @@ public class GameState implements Comparable<GameState> {
 			break;
 		}
 
-		return null;
+		return newState;
 	}
 
 	private ArrayList<GameState> getChildren(Peasant peasant) {
@@ -350,6 +358,12 @@ public class GameState implements Comparable<GameState> {
 			for (StripsAction action : parentAction) {
 				if (peasant.getUnitID() == action.getPeasant().getUnitID()) {
 					actionOfInterest = action;
+				}
+
+				else {
+					if (action.getAction().equals("CREATE")) {
+						actionOfInterest = action;
+					}
 				}
 			}
 		}
@@ -401,7 +415,7 @@ public class GameState implements Comparable<GameState> {
 
 		if (peasant.getPosition().isAdjacent(this.getTownHall().getPosition())) {
 
-			CreateAction create = new CreateAction();
+			CreateAction create = new CreateAction(peasant);
 
 			if (create.preconditionsMet(this)) {
 				children.add(create.apply(this));
@@ -508,11 +522,21 @@ public class GameState implements Comparable<GameState> {
 						break;
 
 					case "CREATE":
-						heuristic += ((goalWood - myWood) / 100) * 10;
-						heuristic += ((goalGold - myGold) / 100) * 10;
+						// heuristic += ((goalWood - myWood) / 100) * 10;
+						// heuristic += ((goalGold - myGold) / 100) * 10;
+
+						if ((this.getTotalFoodOnMap() - this.getPeasants().size()) > 0) {
+							heuristic += 100;
+						}
+
+						if (this.getMyGold() >= 0) {
+							heuristic += 400;
+						}
 						break;
 					}
-
+					break;
+				case "CREATE":
+					heuristic += 500;
 					break;
 				}
 				break;
@@ -551,7 +575,7 @@ public class GameState implements Comparable<GameState> {
 		}
 
 		if (action.size() == 2) {
-			System.out.println("two actions");
+
 		}
 
 		if (action.size() == 3) {

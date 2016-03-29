@@ -8,12 +8,17 @@ import edu.cwru.sepia.agent.planner.Position;
 
 public class CreateAction implements StripsAction {
 
-	private Peasant peasant;
+	private Peasant creatorPeasant;
+	private Peasant createdPeasant;
+
+	public CreateAction(Peasant creator) {
+		this.creatorPeasant = creator;
+	}
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
 		return state.isBuildPeasants() && state.getMyGold() >= 400
-				&& ((state.getTotalFoodOnMap() - state.getPeasants().size()) >= 0);
+				&& ((state.getTotalFoodOnMap() - state.getPeasants().size()) > 0);
 	}
 
 	@Override
@@ -29,8 +34,9 @@ public class CreateAction implements StripsAction {
 
 			if (pos.inBounds(state.getState().getXExtent(), state.getState().getYExtent())
 					&& !state.getState().isResourceAt(pos.x, pos.y)) {
-				this.peasant = new Peasant(null, 0, new Position(pos.x, pos.y), state.getPeasants().size());
-				newPeasants.add(peasant);
+				this.createdPeasant = new Peasant(null, 0, new Position(pos.x, pos.y), state.getPeasants().size());
+				newPeasants.add(createdPeasant);
+				break;
 			}
 		}
 
@@ -41,12 +47,8 @@ public class CreateAction implements StripsAction {
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
+		newState.setMyGold(newState.getMyGold() - 400);
 		return newState;
-	}
-
-	@Override
-	public Peasant getPeasant() {
-		return peasant;
 	}
 
 	@Override
@@ -55,7 +57,17 @@ public class CreateAction implements StripsAction {
 	}
 
 	public String toString() {
-		return "[BUILDING A PEASANT WITH ID: " + peasant.getUnitID() + "] \n";
+		return "[PeasantID: " + this.creatorPeasant.getUnitID() + "BUILDING A PEASANT WITH ID: "
+				+ createdPeasant.getUnitID() + "] \n";
+	}
+
+	@Override
+	public Peasant getPeasant() {
+		return creatorPeasant;
+	}
+
+	public Peasant getCreatedPeasant() {
+		return createdPeasant;
 	}
 
 }
