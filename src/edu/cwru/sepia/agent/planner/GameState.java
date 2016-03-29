@@ -439,232 +439,177 @@ public class GameState implements Comparable<GameState> {
 	public double heuristic() {
 		double heuristic = 0;
 
-		ArrayList<StripsAction> action = parentAction;
+		ArrayList<StripsAction> lastAction = parentAction;
+		ArrayList<StripsAction> ancestorAction = this.getParentState().getParentAction();
 
-		if (action.size() == 1) {
-			String lastAction = action.get(0).getAction();
-
-			if (parentState.parentAction == null) {
-
-				return heuristic;
-			}
-
-			String ancestorAction = parentState.parentAction.get(0).getAction();
-
-			switch (ancestorAction) {
-			case "MOVE":
-				switch (lastAction) {
-				case "HARVEST":
-
-					HarvestAction harvest = (HarvestAction) parentAction.get(0);
-
-					if (harvest.getResource().getName().equals("FOREST")) {
-						if (myWood <= goalWood) {
-							heuristic += 200;
-						}
-						if (myWood > goalWood) {
-							heuristic -= 1000;
-						}
-					}
-
-					else if (harvest.getResource().getName().equals("GOLDMINE")) {
-						if (myGold <= goalGold) {
-							heuristic += 200;
-						}
-
-						if (myGold > goalGold) {
-							heuristic -= 1000;
-						}
-					}
-
-					break;
-
-				case "DEPOSIT":
-					heuristic += 100;
-					break;
-				}
-				break;
-
-			case "HARVEST":
-				switch (lastAction) {
-				case "MOVE":
-					heuristic += 100;
-					break;
-				}
-				break;
-
-			case "DEPOSIT":
-				switch (lastAction) {
-				case "MOVE":
-
-					MoveAction moveAction = (MoveAction) parentAction.get(0);
-					String moveToResourceType = moveAction.getMapObject().getName();
-
-					switch (moveToResourceType) {
-					case "FOREST":
-
-						if (myWood < goalWood) {
-							heuristic += 200;
-						}
-						if (myWood > goalWood) {
-							heuristic -= 1000;
-						}
-						break;
-					case "GOLDMINE":
-
-						if (myGold < goalGold) {
-							heuristic += 400;
-						}
-
-						if (myGold > goalGold) {
-							heuristic -= 1000;
-						}
-						break;
-
-					case "CREATE":
-						// heuristic += ((goalWood - myWood) / 100) * 10;
-						// heuristic += ((goalGold - myGold) / 100) * 10;
-
-						if ((this.getTotalFoodOnMap() - this.getPeasants().size()) > 0) {
-							heuristic += 100;
-						}
-
-						if (this.getMyGold() >= 0) {
-							heuristic += 400;
-						}
-						break;
-					}
-					break;
-				case "CREATE":
-					heuristic += 500;
-					break;
-				}
-				break;
-			case "CREATE":
-				switch (lastAction) {
-				case "MOVE":
-
-					MoveAction moveAction = (MoveAction) parentAction.get(0);
-					String moveToResourceType = moveAction.getMapObject().getName();
-
-					switch (moveToResourceType) {
-					case "FOREST":
-
-						if (myWood < goalWood) {
-							heuristic += 200;
-						}
-						if (myWood > goalWood) {
-							heuristic -= 1000;
-						}
-						break;
-					case "GOLDMINE":
-
-						if (myGold < goalGold) {
-							heuristic += 400;
-						}
-
-						if (myGold > goalGold) {
-							heuristic -= 1000;
-						}
-						break;
-					}
-					break;
-				}
-				break;
-			}
+		if (ancestorAction == null) {
+			return heuristic;
 		}
 
-		if (action.size() == 2) {
+		if (lastAction.size() == 1) {
+			heuristic += heuristicPerPeasant(lastAction.get(0), ancestorAction.get(0));
+		}
 
-			ArrayList<StripsAction> lastAction = parentAction;
+		if (lastAction.size() == 2) {
 			StripsAction lAct1 = lastAction.get(0);
 			StripsAction lAct2 = lastAction.get(1);
 
-			ArrayList<StripsAction> ancestorAction = this.getParentState().getParentAction();
 			StripsAction aAct1 = ancestorAction.get(0);
 			StripsAction aAct2 = null;
 
-			if (ancestorAction.size() != 1) {
+			if (ancestorAction.size() > 1) {
 				aAct2 = ancestorAction.get(1);
 			}
 
 			// This means that the ancestor just did a create action
 			if (aAct2 == null) {
-
-				switch (lAct1.getAction()) {
-				case "MOVE":
-
-					MoveAction moveAction = (MoveAction) parentAction.get(0);
-					String moveToResourceType = moveAction.getMapObject().getName();
-
-					switch (moveToResourceType) {
-					case "FOREST":
-
-						if (myWood < goalWood) {
-							heuristic += 200;
-						}
-						if (myWood > goalWood) {
-							heuristic -= 1000;
-						}
-						break;
-					case "GOLDMINE":
-
-						if (myGold < goalGold) {
-							heuristic += 400;
-						}
-
-						if (myGold > goalGold) {
-							heuristic -= 1000;
-						}
-						break;
-					}
-					break;
-				}
-
-				switch (lAct2.getAction()) {
-				case "MOVE":
-
-					MoveAction moveAction = (MoveAction) parentAction.get(0);
-					String moveToResourceType = moveAction.getMapObject().getName();
-
-					switch (moveToResourceType) {
-					case "FOREST":
-
-						if (myWood < goalWood) {
-							heuristic += 200;
-						}
-						if (myWood > goalWood) {
-							heuristic -= 1000;
-						}
-						break;
-					case "GOLDMINE":
-
-						if (myGold < goalGold) {
-							heuristic += 400;
-						}
-
-						if (myGold > goalGold) {
-							heuristic -= 1000;
-						}
-						break;
-					}
-					break;
-				}
-			}
-
-			else {
-
+				heuristic += 1000;
+				heuristic += heuristicPerPeasant(lAct1, aAct1);
+				heuristic += heuristicPerPeasant(lAct2, aAct1);
+			} else {
+				heuristic += heuristicPerPeasant(lAct1, aAct1);
+				heuristic += heuristicPerPeasant(lAct2, aAct2);
 			}
 		}
 
-		if (action.size() == 3)
+		if (lastAction.size() == 3) {
 
-		{
-			System.out.println("three actions");
 		}
 
 		return heuristic;
 
+	}
+
+	private double heuristicPerPeasant(StripsAction parentAction, StripsAction ancestorsAction) {
+
+		double heuristic = 0;
+
+		String lastAction = parentAction.getAction();
+		String ancestorAction = ancestorsAction.getAction();
+
+		switch (ancestorAction) {
+		case "MOVE":
+			switch (lastAction) {
+			case "HARVEST":
+
+				HarvestAction harvest = (HarvestAction) parentAction;
+
+				if (harvest.getResource().getName().equals("FOREST")) {
+					if (myWood <= goalWood) {
+						heuristic += 200;
+					}
+					if (myWood > goalWood) {
+						heuristic -= 1000;
+					}
+				}
+
+				else if (harvest.getResource().getName().equals("GOLDMINE")) {
+					if (myGold <= goalGold) {
+						heuristic += 200;
+					}
+
+					if (myGold > goalGold) {
+						heuristic -= 1000;
+					}
+				}
+
+				break;
+
+			case "DEPOSIT":
+				heuristic += 100;
+				break;
+			}
+			break;
+
+		case "HARVEST":
+			switch (lastAction) {
+			case "MOVE":
+				heuristic += 100;
+				break;
+			}
+			break;
+
+		case "DEPOSIT":
+			switch (lastAction) {
+			case "MOVE":
+
+				MoveAction moveAction = (MoveAction) parentAction;
+				String moveToResourceType = moveAction.getMapObject().getName();
+
+				switch (moveToResourceType) {
+				case "FOREST":
+
+					if (myWood <= goalWood) {
+						heuristic += 200;
+					}
+					if (myWood > goalWood) {
+						heuristic -= 1000;
+					}
+					break;
+				case "GOLDMINE":
+
+					if (myGold <= goalGold) {
+						heuristic += 400;
+					}
+
+					if (myGold > goalGold) {
+						heuristic -= 1000;
+					}
+					break;
+
+				case "CREATE":
+					// heuristic += ((goalWood - myWood) / 100) * 10;
+					// heuristic += ((goalGold - myGold) / 100) * 10;
+
+					if ((this.getTotalFoodOnMap() - this.getPeasants().size()) > 0) {
+						heuristic += 100;
+					}
+
+					if (this.getMyGold() >= 0) {
+						heuristic += 400;
+					}
+					break;
+				}
+				break;
+			case "CREATE":
+				heuristic += 500;
+				break;
+			}
+			break;
+		case "CREATE":
+			switch (lastAction) {
+			case "MOVE":
+
+				MoveAction moveAction = (MoveAction) parentAction;
+				String moveToResourceType = moveAction.getMapObject().getName();
+
+				switch (moveToResourceType) {
+				case "FOREST":
+
+					if (myWood <= goalWood) {
+						heuristic += 200;
+					}
+					if (myWood > goalWood) {
+						heuristic -= 1000;
+					}
+					break;
+				case "GOLDMINE":
+
+					if (myGold <= goalGold) {
+						heuristic += 400;
+					}
+
+					if (myGold > goalGold) {
+						heuristic -= 1000;
+					}
+					break;
+				}
+				break;
+			}
+			break;
+		}
+
+		return heuristic;
 	}
 
 	/**
