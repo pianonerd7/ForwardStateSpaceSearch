@@ -113,7 +113,7 @@ public class PlannerAgent extends Agent {
 			openList.remove(0);
 
 			List<GameState> children = curState.generateChildren();
-			openList = new ArrayList<GameState>();
+			// openList = new ArrayList<GameState>();
 			for (GameState child : children) {
 				if (curState.isGoal()) {
 					System.out.println("PATH FOUND \n");
