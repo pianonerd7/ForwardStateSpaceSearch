@@ -448,9 +448,10 @@ public class GameState implements Comparable<GameState> {
 		Peasant peasant2 = null;
 		Peasant peasant3 = null;
 
-		if (collisionCheck(action1Name, action2Name, action3Name, action1, action2, action3)) {
-			return null;
-		}
+		// if (collisionCheck(action1Name, action2Name, action3Name, action1,
+		// action2, action3)) {
+		// return null;
+		// }
 
 		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
@@ -689,6 +690,12 @@ public class GameState implements Comparable<GameState> {
 
 		if (action1Name.equals(action2Name) && action1Name.equals("CREATE")) {
 			return null;
+		}
+
+		if (action1Name.toString().equals("CREATE")) {
+			return state1;
+		} else if (action2Name.toString().equals("CREATE")) {
+			return state2;
 		}
 
 		Peasant peasant1 = null;
@@ -951,13 +958,21 @@ public class GameState implements Comparable<GameState> {
 		if (lastAction.size() == 2) {
 			heuristic += 1000;
 			StripsAction lAct1 = lastAction.get(0);
-			StripsAction lAct2 = lastAction.get(1);
+			StripsAction lAct2 = null;
 
 			StripsAction aAct1 = ancestorAction.get(0);
 			StripsAction aAct2 = null;
 
+			if (lastAction.size() > 1) {
+				lAct2 = lastAction.get(1);
+			}
 			if (ancestorAction.size() > 1) {
 				aAct2 = ancestorAction.get(1);
+			}
+
+			if (lAct2 == null) {
+				heuristic += 1000;
+				return heuristic;
 			}
 
 			// This means that the ancestor just did a create action
@@ -979,11 +994,19 @@ public class GameState implements Comparable<GameState> {
 			StripsAction lAct3 = lastAction.get(2);
 
 			StripsAction aAct1 = ancestorAction.get(0);
-			StripsAction aAct2 = ancestorAction.get(1);
+			StripsAction aAct2 = null;
 			StripsAction aAct3 = null;
 
+			if (ancestorAction.size() > 1) {
+				aAct2 = ancestorAction.get(1);
+			}
 			if (ancestorAction.size() > 2) {
 				aAct3 = ancestorAction.get(2);
+			}
+
+			if (aAct2 == null) {
+				heuristic += 2000;
+				return heuristic;
 			}
 
 			// This means that the ancestor just did a create action
