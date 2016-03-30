@@ -251,6 +251,29 @@ public class GameState implements Comparable<GameState> {
 		String action2Name = action2.getAction();
 		String action3Name = action3.getAction();
 
+		// if action1 is creating, make peasant 2 wait
+		if (action1Name.toString().equals("CREATE")) {
+			ArrayList<StripsAction> newParentAction = new ArrayList<StripsAction>();
+
+			for (StripsAction action : state2.getParentAction()) {
+				if (action.getPeasant().getUnitID() == action2.getPeasant().getUnitID()) {
+					newParentAction.add(action);
+					break;
+				}
+			}
+			state2.setParentAction(newParentAction);
+		} else if (action2Name.toString().equals("CREATE")) {
+			ArrayList<StripsAction> newParentAction = new ArrayList<StripsAction>();
+
+			for (StripsAction action : state1.getParentAction()) {
+				if (action.getPeasant().getUnitID() == action1.getPeasant().getUnitID()) {
+					newParentAction.add(action);
+					break;
+				}
+			}
+			state1.setParentAction(newParentAction);
+		}
+
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
 		Peasant peasant3 = null;
