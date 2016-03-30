@@ -119,18 +119,10 @@ public class PEAgent extends Agent {
 		Map<Integer, ActionResult> lastAction = historyView.getCommandFeedback(playernum,
 				stateView.getTurnNumber() - 1);
 
-		boolean isPrevActionComplete = true;
-
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 
-		int peasantID = -1;
-
-		if (!plan.empty()) {
-
-			checkCreatePeasant(stateView);
-
-			StripsAction stripsAction = plan.pop();
-			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
+		for (Integer key : lastAction.keySet()) {
+			int peasantID = key;
 
 			if (lastAction.get(peasantID) != null) {
 				if (lastAction.get(peasantID).getFeedback() == ActionFeedback.FAILED) {
@@ -143,7 +135,6 @@ public class PEAgent extends Agent {
 									&& !stateView.isResourceAt(pos.x, pos.y)) {
 								Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
 								sepiaAction.put(peasantID, moveAction);
-								plan.push(stripsAction);
 								return sepiaAction;
 							}
 						}
@@ -156,15 +147,10 @@ public class PEAgent extends Agent {
 												.getDirection(this.desiredResource.get(peasantID)));
 
 						sepiaAction.put(peasantID, harvestAction);
-						plan.push(stripsAction);
 						return sepiaAction;
 
 					} else if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEDEPOSIT) {
 						System.out.println("DEPOSIT ERROR");
-						// System.out.println("ID: " + peasantID + " , " +
-						// stateView.getUnit(peasantID).getXPosition()
-						// + ", " +
-						// stateView.getUnit(peasantID).getYPosition());
 
 						Action depositAction = Action.createPrimitiveDeposit(peasantID,
 								new Position(stateView.getUnit(peasantID).getXPosition(),
@@ -172,10 +158,23 @@ public class PEAgent extends Agent {
 												.getDirection(new Position(this.townHall.getXPosition(),
 														this.townHall.getYPosition())));
 						sepiaAction.put(peasantID, depositAction);
-						plan.push(stripsAction);
 						return sepiaAction;
 					}
 				}
+			}
+		}
+
+		boolean isPrevActionComplete = true;
+		int peasantID = -1;
+
+		if (!plan.empty()) {
+
+			checkCreatePeasant(stateView);
+
+			StripsAction stripsAction = plan.pop();
+			peasantID = this.peasantIdMap.get(getPeasantID(stripsAction));
+
+			if (lastAction.get(peasantID) != null) {
 				isPrevActionComplete = lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED;
 			}
 

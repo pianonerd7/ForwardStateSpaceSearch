@@ -202,24 +202,23 @@ public class GameState implements Comparable<GameState> {
 				}
 			}
 
-			// for (int i = 0; i < children.size(); i++) {
-			// Position p1 = children.get(i).getPeasants().get(0).getPosition();
-			// Position p2 = children.get(i).getPeasants().get(1).getPosition();
-			//
-			// if (p1.x == p2.x && p1.y == p2.y) {
-			//
-			// if (children.size() > 1) {
-			// children.remove(i);
-			// continue;
-			// }
-			// }
-			// }
+			for (int i = 0; i < children.size(); i++) {
+				Position p1 = children.get(i).getPeasants().get(0).getPosition();
+				Position p2 = children.get(i).getPeasants().get(1).getPosition();
+
+				if (p1.x == p2.x && p1.y == p2.y) {
+
+					if (children.size() > 1) {
+						children.remove(i);
+						continue;
+					}
+				}
+			}
 		}
 
-		else if (listChildren.size() == 3)
+		else if (listChildren.size() == 3) {
 
-		{
-
+			System.out.println("hello");
 		}
 
 		return children;
