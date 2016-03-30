@@ -448,10 +448,9 @@ public class GameState implements Comparable<GameState> {
 		Peasant peasant2 = null;
 		Peasant peasant3 = null;
 
-		// if (collisionCheck(action1Name, action2Name, action3Name, action1,
-		// action2, action3)) {
-		// return null;
-		// }
+		if (collisionCheck(action1Name, action2Name, action3Name, action1, action2, action3)) {
+			return null;
+		}
 
 		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
@@ -692,11 +691,11 @@ public class GameState implements Comparable<GameState> {
 			return null;
 		}
 
-		if (action1Name.toString().equals("CREATE")) {
-			return state1;
-		} else if (action2Name.toString().equals("CREATE")) {
-			return state2;
-		}
+		// if (action1Name.toString().equals("CREATE")) {
+		// return state1;
+		// } else if (action2Name.toString().equals("CREATE")) {
+		// return state2;
+		// }
 
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
