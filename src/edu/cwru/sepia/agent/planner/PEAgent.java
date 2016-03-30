@@ -205,11 +205,9 @@ public class PEAgent extends Agent {
 
 			if (unitType.equals("peasant")) {
 
-				for (Integer key : peasantIdMap.keySet()) {
-					if (stripsNewPId != -1 && peasantIdMap.get(key) != unitId) {
-						peasantIdMap.put(stripsNewPId, unitId);
-						stripsNewPId = -1;
-					}
+				if (!peasantIdMap.containsValue(unitId) && stripsNewPId != -1) {
+					peasantIdMap.put(stripsNewPId, unitId);
+					stripsNewPId = -1;
 				}
 			}
 		}
