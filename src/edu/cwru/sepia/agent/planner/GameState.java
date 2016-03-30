@@ -188,16 +188,9 @@ public class GameState implements Comparable<GameState> {
 			for (GameState gamestate1 : listChildren.get(0)) {
 				for (GameState gamestate2 : listChildren.get(1)) {
 
-					if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0) {
-						GameState newChild = mergeState(gamestate1, gamestate2);
-						if (newChild != null) {
-							children.add(newChild);
-						}
-					} else {
-						GameState newChild = mergeState(gamestate1, gamestate2);
-						if (newChild != null) {
-							children.add(newChild);
-						}
+					GameState newChild = mergeState(gamestate1, gamestate2);
+					if (newChild != null) {
+						children.add(newChild);
 					}
 				}
 			}
@@ -217,41 +210,32 @@ public class GameState implements Comparable<GameState> {
 		}
 
 		else if (listChildren.size() == 3) {
-
-			System.out.println("hello");
-
 			for (GameState gamestate1 : listChildren.get(0)) {
 				for (GameState gamestate2 : listChildren.get(1)) {
 					for (GameState gamestate3 : listChildren.get(2)) {
 
-						if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0
-								&& gamestate2.getParentAction().get(0).getPeasant().getUnitID() == 1) {
-							GameState newChild = mergeState(gamestate1, gamestate2, gamestate3);
-							if (newChild != null) {
-								children.add(newChild);
-							}
-						} else {
-							GameState newChild = mergeState(gamestate1, gamestate2);
-							if (newChild != null) {
-								children.add(newChild);
-							}
+						GameState newChild = mergeState(gamestate1, gamestate2, gamestate3);
+						if (newChild != null) {
+							children.add(newChild);
 						}
 					}
 				}
 			}
 
-			for (int i = 0; i < children.size(); i++) {
-				Position p1 = children.get(i).getPeasants().get(0).getPosition();
-				Position p2 = children.get(i).getPeasants().get(1).getPosition();
-
-				if (p1.x == p2.x && p1.y == p2.y) {
-
-					if (children.size() > 1) {
-						children.remove(i);
-						continue;
-					}
-				}
-			}
+			// for (int i = 0; i < children.size(); i++) {
+			// Position p1 = children.get(i).getPeasants().get(0).getPosition();
+			// Position p2 = children.get(i).getPeasants().get(1).getPosition();
+			// Position p3 = children.get(i).getPeasants().get(2).getPosition();
+			//
+			// if (p1.x == p2.x && p1.y == p2.y) {
+			//
+			// if (children.size() > 1) {
+			// children.remove(i);
+			// continue;
+			// }
+			// }
+			//
+			// }
 
 		}
 
@@ -260,7 +244,243 @@ public class GameState implements Comparable<GameState> {
 	}
 
 	private GameState mergeState(GameState state1, GameState state2, GameState state3) {
-		return null;
+		StripsAction action1 = state1.parentAction.get(0);
+		StripsAction action2 = state2.parentAction.get(0);
+		StripsAction action3 = state3.parentAction.get(0);
+		String action1Name = action1.getAction();
+		String action2Name = action2.getAction();
+		String action3Name = action3.getAction();
+
+		Peasant peasant1 = null;
+		Peasant peasant2 = null;
+		Peasant peasant3 = null;
+
+		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
+		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
+		ArrayList<Forest> newForests = new ArrayList<Forest>();
+		ArrayList<GoldMine> newGoldMines = new ArrayList<GoldMine>();
+		TownHall newTownHall = state1.getTownHall();
+
+		int newMyWood = state1.getMyWood();
+		int newMyGold = state1.getMyGold();
+
+		int newCost = state1.getMyCost();
+
+		for (Peasant peasant : state1.peasants) {
+			if (peasant.getUnitID() == action1.getPeasant().getUnitID()) {
+				peasant1 = peasant;
+			}
+		}
+
+		for (Peasant peasant : state2.peasants) {
+			if (peasant.getUnitID() == action2.getPeasant().getUnitID()) {
+				peasant2 = peasant;
+			}
+		}
+
+		for (Peasant peasant : state3.peasants) {
+			if (peasant.getUnitID() == action3.getPeasant().getUnitID()) {
+				peasant3 = peasant;
+			}
+		}
+
+		for (Forest forest : state1.getForests()) {
+			newForests.add(forest);
+		}
+
+		for (GoldMine goldmine : state1.getGoldMines()) {
+			newGoldMines.add(goldmine);
+		}
+
+		newAction.add(action1);
+		newAction.add(action2);
+		newAction.add(action3);
+		newPeasants.add(peasant1);
+		newPeasants.add(peasant2);
+		newPeasants.add(peasant3);
+
+		GameState newState = new GameState(newAction, this, newPeasants, newForests, newGoldMines, newTownHall,
+				state1.getGoalWood(), state1.getGoalGold(), newMyWood, newMyGold, state1.getPlayerNum(),
+				state1.getState(), newCost, state1.getTotalWoodOnMap(), state1.getTotalGoldOnMap(),
+				state1.isBuildPeasants(), state1.getTotalFoodOnMap());
+
+		switch (action2Name) {
+		case ("MOVE"):
+			newState.setMyCost(newState.getMyCost() + state2.getMyCost());
+			break;
+		case ("HARVEST"):
+			newState.setMyCost(newState.getMyCost() + 1);
+
+			HarvestAction harvest = (HarvestAction) action2;
+			MapObject resource = harvest.getResource();
+
+			if (resource.getName().equals("FOREST")) {
+				for (int i = 0; i < newState.getForests().size(); i++) {
+					Forest forest = newState.getForests().get(i);
+
+					if (forest.getPosition().x == resource.getPosition().x
+							&& forest.getPosition().y == resource.getPosition().y) {
+						if (forest.getResourceQuantity() == 0) {
+							return null;
+						}
+
+						forest.setResourceQuantity(forest.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (forest.getResourceQuantity() <= 0) {
+							ArrayList<Forest> newForest = newState.getForests();
+
+							ArrayList<Forest> updateForest = new ArrayList<Forest>();
+							for (Forest forests : newForest) {
+								if (forests.getResourceQuantity() != 0) {
+									updateForest.add(forests);
+								}
+							}
+							newState.setForests(updateForest);
+						}
+
+						break;
+					}
+				}
+			}
+
+			else if (resource.getName().equals("GOLDMINE")) {
+				for (int i = 0; i < newState.getGoldMines().size(); i++) {
+					GoldMine goldmine = newState.getGoldMines().get(i);
+
+					if (goldmine.getPosition().x == resource.getPosition().x
+							&& goldmine.getPosition().y == resource.getPosition().y) {
+
+						if (goldmine.getResourceQuantity() == 0) {
+							return null;
+						}
+
+						goldmine.setResourceQuantity(goldmine.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (goldmine.getResourceQuantity() <= 0) {
+							ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
+
+							ArrayList<GoldMine> updateGoldMine = new ArrayList<GoldMine>();
+							for (GoldMine goldmines : newGoldMine) {
+								if (goldmines.getResourceQuantity() != 0) {
+									updateGoldMine.add(goldmines);
+								}
+							}
+							newState.setGoldMines(updateGoldMine);
+						}
+
+						break;
+					}
+				}
+			}
+			break;
+		case ("DEPOSIT"):
+			newState.setMyCost(newState.getMyCost() + 1);
+
+			DepositAction deposit = (DepositAction) action2;
+
+			if (deposit.getPeasant().getHoldingObject().toString().equals("WOOD")) {
+				newState.setMyWood(newState.getMyWood() + deposit.getPeasant().getResourceQuantity());
+			} else if (deposit.getPeasant().getHoldingObject().toString().equals("GOLD")) {
+				newState.setMyGold(newState.getMyGold() + deposit.getPeasant().getResourceQuantity());
+			}
+			break;
+		}
+
+		switch (action3Name) {
+		case ("MOVE"):
+			newState.setMyCost(newState.getMyCost() + state3.getMyCost());
+			break;
+		case ("HARVEST"):
+			newState.setMyCost(newState.getMyCost() + 1);
+
+			HarvestAction harvest = (HarvestAction) action2;
+			MapObject resource = harvest.getResource();
+
+			if (resource.getName().equals("FOREST")) {
+				for (int i = 0; i < newState.getForests().size(); i++) {
+					Forest forest = newState.getForests().get(i);
+
+					if (forest.getPosition().x == resource.getPosition().x
+							&& forest.getPosition().y == resource.getPosition().y) {
+						if (forest.getResourceQuantity() == 0) {
+							return null;
+						}
+
+						forest.setResourceQuantity(forest.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (forest.getResourceQuantity() <= 0) {
+							ArrayList<Forest> newForest = newState.getForests();
+
+							ArrayList<Forest> updateForest = new ArrayList<Forest>();
+							for (Forest forests : newForest) {
+								if (forests.getResourceQuantity() != 0) {
+									updateForest.add(forests);
+								}
+							}
+							newState.setForests(updateForest);
+						}
+
+						break;
+					}
+				}
+			}
+
+			else if (resource.getName().equals("GOLDMINE")) {
+				for (int i = 0; i < newState.getGoldMines().size(); i++) {
+					GoldMine goldmine = newState.getGoldMines().get(i);
+
+					if (goldmine.getPosition().x == resource.getPosition().x
+							&& goldmine.getPosition().y == resource.getPosition().y) {
+
+						if (goldmine.getResourceQuantity() == 0) {
+							return null;
+						}
+
+						goldmine.setResourceQuantity(goldmine.getResourceQuantity() - 100);
+
+						// If the amount of wood at that forest is less than 0,
+						// then
+						// we don't consider it anymore
+						if (goldmine.getResourceQuantity() <= 0) {
+							ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
+
+							ArrayList<GoldMine> updateGoldMine = new ArrayList<GoldMine>();
+							for (GoldMine goldmines : newGoldMine) {
+								if (goldmines.getResourceQuantity() != 0) {
+									updateGoldMine.add(goldmines);
+								}
+							}
+							newState.setGoldMines(updateGoldMine);
+						}
+						break;
+					}
+				}
+			}
+
+			break;
+		case ("DEPOSIT"):
+			newState.setMyCost(newState.getMyCost() + 1);
+
+			DepositAction deposit = (DepositAction) action3;
+
+			if (deposit.getPeasant().getHoldingObject().toString().equals("WOOD")) {
+				newState.setMyWood(newState.getMyWood() + deposit.getPeasant().getResourceQuantity());
+			} else if (deposit.getPeasant().getHoldingObject().toString().equals("GOLD")) {
+				newState.setMyGold(newState.getMyGold() + deposit.getPeasant().getResourceQuantity());
+			}
+			break;
+		}
+
+		return newState;
 	}
 
 	private GameState mergeState(GameState state1, GameState state2) {

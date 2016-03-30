@@ -18,7 +18,7 @@ public class CreateAction implements StripsAction {
 	@Override
 	public boolean preconditionsMet(GameState state) {
 		return state.isBuildPeasants() && state.getMyGold() >= 400
-				&& ((state.getTotalFoodOnMap() - state.getPeasants().size()) > 1);
+				&& ((state.getTotalFoodOnMap() - state.getPeasants().size()) > 0);
 	}
 
 	@Override

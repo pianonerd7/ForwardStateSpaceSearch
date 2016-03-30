@@ -117,8 +117,7 @@ public class PlannerAgent extends Agent {
 			}
 
 			List<GameState> children = curState.generateChildren();
-			// Collections.sort(curState.generateChildren(),
-			// Collections.reverseOrder());
+
 			openList = new ArrayList<GameState>();
 			for (GameState child : children) {
 				if (curState.isGoal()) {
