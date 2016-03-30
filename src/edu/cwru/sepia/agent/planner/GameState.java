@@ -775,7 +775,37 @@ public class GameState implements Comparable<GameState> {
 		}
 
 		if (lastAction.size() == 3) {
+			heuristic += 2000;
 
+			StripsAction lAct1 = lastAction.get(0);
+			StripsAction lAct2 = lastAction.get(1);
+			StripsAction lAct3 = lastAction.get(2);
+
+			StripsAction aAct1 = ancestorAction.get(0);
+			StripsAction aAct2 = ancestorAction.get(1);
+			StripsAction aAct3 = null;
+
+			if (ancestorAction.size() > 2) {
+				aAct3 = ancestorAction.get(2);
+			}
+
+			// This means that the ancestor just did a create action
+			if (aAct3 == null) {
+				heuristic += 1000;
+				if (lAct1.getAction().toString().equals("CREATE")) {
+					heuristic += heuristicPerPeasant(lAct1, aAct1);
+					heuristic += heuristicPerPeasant(lAct2, aAct2);
+					heuristic += heuristicPerPeasant(lAct3, aAct1);
+				} else {
+					heuristic += heuristicPerPeasant(lAct1, aAct1);
+					heuristic += heuristicPerPeasant(lAct2, aAct2);
+					heuristic += heuristicPerPeasant(lAct3, aAct2);
+				}
+			} else {
+				heuristic += heuristicPerPeasant(lAct1, aAct1);
+				heuristic += heuristicPerPeasant(lAct2, aAct2);
+				heuristic += heuristicPerPeasant(lAct3, aAct3);
+			}
 		}
 
 		return heuristic;
