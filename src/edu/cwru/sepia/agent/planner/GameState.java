@@ -240,51 +240,200 @@ public class GameState implements Comparable<GameState> {
 
 	}
 
-	private boolean collisionCheck(String action1Name, String action2Name, StripsAction action1, StripsAction action2) {
-		if (action2Name.toString().equals("MOVE")) {
-			if (action1Name.toString().equals("HARVEST")) {
-				HarvestAction harvest = (HarvestAction) action1;
-				MoveAction move = (MoveAction) action2;
+	private boolean collisionCheck(String action1Name, String action2Name, String action3Name, StripsAction action1,
+			StripsAction action2, StripsAction action3) {
 
-				MapObject resource = harvest.getResource();
-				int quantity = 0;
+		MapObject a1 = null;
+		MapObject a2 = null;
+		MapObject a3 = null;
 
-				if (resource.getName().toString().equals("FOREST")) {
-					Forest forest = (Forest) resource;
-					quantity = forest.getResourceQuantity();
-				} else if (resource.getName().toString().equals("GOLDMINE")) {
-					GoldMine goldmine = (GoldMine) resource;
-					quantity = goldmine.getResourceQuantity();
+		int r1 = 0;
+		int r2 = 0;
+		int r3 = 0;
+
+		if (action1Name.toString().equals("HARVEST")) {
+			HarvestAction harvest = (HarvestAction) action1;
+			a1 = harvest.getResource();
+
+			if (a1.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a1;
+
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r1 = f.getResourceQuantity();
+						break;
+					}
 				}
+			} else if (a1.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a1;
 
-				if (harvest.getResource().getPosition().x == move.getMapObject().getPosition().x
-						&& harvest.getResource().getPosition().y == move.getMapObject().getPosition().y
-						&& quantity <= 100) {
-					return true;
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r1 = g.getResourceQuantity();
+						break;
+					}
 				}
 			}
-			if (action1Name.toString().equals("MOVE")) {
-				MoveAction move1 = (MoveAction) action1;
-				MoveAction move2 = (MoveAction) action2;
+		} else if (action1Name.toString().equals("MOVE")) {
+			MoveAction move = (MoveAction) action1;
+			a1 = move.getMapObject();
 
-				MapObject resource = move2.getMapObject();
-				int quantity = 0;
+			if (a1.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a1;
 
-				if (resource.getName().toString().equals("FOREST")) {
-					Forest forest = (Forest) resource;
-					quantity = forest.getResourceQuantity();
-				} else if (resource.getName().toString().equals("GOLDMINE")) {
-					GoldMine goldmine = (GoldMine) resource;
-					quantity = goldmine.getResourceQuantity();
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r1 = f.getResourceQuantity();
+						break;
+					}
 				}
+			} else if (a1.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a1;
 
-				if (move1.getMapObject().getPosition().x == move2.getMapObject().getPosition().x
-						&& move1.getMapObject().getPosition().y == move2.getMapObject().getPosition().y
-						&& quantity <= 100) {
-					return true;
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r1 = g.getResourceQuantity();
+						break;
+					}
 				}
+			}
+		} else if (action1Name.toString().equals("DEPOSIT")) {
+			a1 = this.townHall;
+		}
+
+		if (action2Name.toString().equals("HARVEST")) {
+			HarvestAction harvest = (HarvestAction) action2;
+			a2 = harvest.getResource();
+
+			if (a2.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a2;
+
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r2 = f.getResourceQuantity();
+						break;
+					}
+				}
+			} else if (a2.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a2;
+
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r2 = g.getResourceQuantity();
+						break;
+					}
+				}
+			}
+		} else if (action2Name.toString().equals("MOVE")) {
+			MoveAction move = (MoveAction) action2;
+			a2 = move.getMapObject();
+
+			if (a2.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a2;
+
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r2 = f.getResourceQuantity();
+						break;
+					}
+				}
+			} else if (a2.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a2;
+
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r2 = g.getResourceQuantity();
+						break;
+					}
+				}
+			}
+		} else if (action2Name.toString().equals("DEPOSIT")) {
+			a2 = this.townHall;
+		}
+
+		if (action3Name.toString().equals("HARVEST")) {
+			HarvestAction harvest = (HarvestAction) action3;
+			a3 = harvest.getResource();
+
+			if (a3.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a3;
+
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r3 = f.getResourceQuantity();
+						break;
+					}
+				}
+			} else if (a3.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a3;
+
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r3 = g.getResourceQuantity();
+						break;
+					}
+				}
+			}
+		} else if (action3Name.toString().equals("MOVE")) {
+			MoveAction move = (MoveAction) action3;
+			a3 = move.getMapObject();
+
+			if (a3.getName().toString().equals("FOREST")) {
+				Forest forest = (Forest) a3;
+
+				for (Forest f : this.getForests()) {
+					if (f.getPosition().x == forest.getPosition().x && f.getPosition().y == forest.getPosition().y) {
+						r3 = f.getResourceQuantity();
+						break;
+					}
+				}
+			} else if (a3.getName().toString().equals("GOLDMINE")) {
+				GoldMine goldmine = (GoldMine) a3;
+
+				for (GoldMine g : this.getGoldMines()) {
+					if (g.getPosition().x == goldmine.getPosition().x
+							&& g.getPosition().y == goldmine.getPosition().y) {
+						r3 = g.getResourceQuantity();
+						break;
+					}
+				}
+			}
+		} else if (action3Name.toString().equals("DEPOSIT")) {
+			a3 = this.townHall;
+		}
+
+		// if 1, 2, 3 are the same
+		// if 1, 2 are the same
+		// if 2, 3 are the same
+		// if 1, 3 are the same
+
+		Position p1 = a1.getPosition();
+		Position p2 = a2.getPosition();
+		Position p3 = a3.getPosition();
+
+		if (p1.x == p2.x && p1.y == p2.y && p2.x == p3.x && p2.y == p3.y) {
+			if (!a1.getName().toString().equals("TOWNHALL") && r1 < 300) {
+				return true;
+			}
+		} else if (p1.x == p2.x && p1.y == p2.y) {
+			if (!a1.getName().toString().equals("TOWNHALL") && r1 < 200) {
+				return true;
+			}
+		} else if (p2.x == p3.x && p2.y == p3.y) {
+			if (!a2.getName().toString().equals("TOWNHALL") && r2 < 200) {
+				return true;
+			}
+		} else if (p1.x == p3.x && p1.y == p3.y) {
+			if (!a3.getName().toString().equals("TOWNHALL") && r3 < 200) {
+				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -299,8 +448,7 @@ public class GameState implements Comparable<GameState> {
 		Peasant peasant2 = null;
 		Peasant peasant3 = null;
 
-		if (collisionCheck(action1Name, action2Name, action1, action2)
-				|| collisionCheck(action1Name, action3Name, action1, action3)) {
+		if (collisionCheck(action1Name, action2Name, action3Name, action1, action2, action3)) {
 			return null;
 		}
 
