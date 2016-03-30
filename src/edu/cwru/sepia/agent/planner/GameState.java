@@ -596,7 +596,7 @@ public class GameState implements Comparable<GameState> {
 		case ("HARVEST"):
 			newState.setMyCost(newState.getMyCost() + 1);
 
-			HarvestAction harvest = (HarvestAction) action2;
+			HarvestAction harvest = (HarvestAction) action3;
 			MapObject resource = harvest.getResource();
 
 			if (resource.getName().equals("FOREST")) {
