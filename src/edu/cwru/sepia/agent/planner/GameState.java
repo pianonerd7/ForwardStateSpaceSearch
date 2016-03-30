@@ -203,7 +203,6 @@ public class GameState implements Comparable<GameState> {
 
 					if (children.size() > 1) {
 						children.remove(i);
-						continue;
 					}
 				}
 			}
@@ -222,25 +221,71 @@ public class GameState implements Comparable<GameState> {
 				}
 			}
 
-			// for (int i = 0; i < children.size(); i++) {
-			// Position p1 = children.get(i).getPeasants().get(0).getPosition();
-			// Position p2 = children.get(i).getPeasants().get(1).getPosition();
-			// Position p3 = children.get(i).getPeasants().get(2).getPosition();
-			//
-			// if (p1.x == p2.x && p1.y == p2.y) {
-			//
-			// if (children.size() > 1) {
-			// children.remove(i);
-			// continue;
-			// }
-			// }
-			//
-			// }
+			for (int i = 0; i < children.size(); i++) {
+				Position p1 = children.get(i).getPeasants().get(0).getPosition();
+				Position p2 = children.get(i).getPeasants().get(1).getPosition();
+				Position p3 = children.get(i).getPeasants().get(2).getPosition();
 
+				if ((p1.x == p2.x && p1.y == p2.y) || (p1.x == p3.x && p1.y == p3.y)
+						|| (p3.x == p2.x && p3.y == p2.y)) {
+
+					if (children.size() > 1) {
+						children.remove(i);
+					}
+				}
+			}
 		}
 
 		return children;
 
+	}
+
+	private boolean collisionCheck(String action1Name, String action2Name, StripsAction action1, StripsAction action2) {
+		if (action2Name.toString().equals("MOVE")) {
+			if (action1Name.toString().equals("HARVEST")) {
+				HarvestAction harvest = (HarvestAction) action1;
+				MoveAction move = (MoveAction) action2;
+
+				MapObject resource = harvest.getResource();
+				int quantity = 0;
+
+				if (resource.getName().toString().equals("FOREST")) {
+					Forest forest = (Forest) resource;
+					quantity = forest.getResourceQuantity();
+				} else if (resource.getName().toString().equals("GOLDMINE")) {
+					GoldMine goldmine = (GoldMine) resource;
+					quantity = goldmine.getResourceQuantity();
+				}
+
+				if (harvest.getResource().getPosition().x == move.getMapObject().getPosition().x
+						&& harvest.getResource().getPosition().y == move.getMapObject().getPosition().y
+						&& quantity <= 100) {
+					return true;
+				}
+			}
+			if (action1Name.toString().equals("MOVE")) {
+				MoveAction move1 = (MoveAction) action1;
+				MoveAction move2 = (MoveAction) action2;
+
+				MapObject resource = move2.getMapObject();
+				int quantity = 0;
+
+				if (resource.getName().toString().equals("FOREST")) {
+					Forest forest = (Forest) resource;
+					quantity = forest.getResourceQuantity();
+				} else if (resource.getName().toString().equals("GOLDMINE")) {
+					GoldMine goldmine = (GoldMine) resource;
+					quantity = goldmine.getResourceQuantity();
+				}
+
+				if (move1.getMapObject().getPosition().x == move2.getMapObject().getPosition().x
+						&& move1.getMapObject().getPosition().y == move2.getMapObject().getPosition().y
+						&& quantity <= 100) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private GameState mergeState(GameState state1, GameState state2, GameState state3) {
@@ -250,33 +295,14 @@ public class GameState implements Comparable<GameState> {
 		String action1Name = action1.getAction();
 		String action2Name = action2.getAction();
 		String action3Name = action3.getAction();
-
-		// if action1 is creating, make peasant 2 wait
-		if (action1Name.toString().equals("CREATE")) {
-			ArrayList<StripsAction> newParentAction = new ArrayList<StripsAction>();
-
-			for (StripsAction action : state2.getParentAction()) {
-				if (action.getPeasant().getUnitID() == action2.getPeasant().getUnitID()) {
-					newParentAction.add(action);
-					break;
-				}
-			}
-			state2.setParentAction(newParentAction);
-		} else if (action2Name.toString().equals("CREATE")) {
-			ArrayList<StripsAction> newParentAction = new ArrayList<StripsAction>();
-
-			for (StripsAction action : state1.getParentAction()) {
-				if (action.getPeasant().getUnitID() == action1.getPeasant().getUnitID()) {
-					newParentAction.add(action);
-					break;
-				}
-			}
-			state1.setParentAction(newParentAction);
-		}
-
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
 		Peasant peasant3 = null;
+
+		if (collisionCheck(action1Name, action2Name, action1, action2)
+				|| collisionCheck(action1Name, action3Name, action1, action3)) {
+			return null;
+		}
 
 		ArrayList<StripsAction> newAction = new ArrayList<StripsAction>();
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
