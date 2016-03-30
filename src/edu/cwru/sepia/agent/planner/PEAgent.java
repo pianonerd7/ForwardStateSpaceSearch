@@ -160,6 +160,25 @@ public class PEAgent extends Agent {
 						sepiaAction.put(peasantID, depositAction);
 						return sepiaAction;
 					}
+				} else if (lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED) {
+					if (lastAction.toString().contains("COMPOUNDMOVE")) {
+						if (!this.desiredDestination.get(peasantID)
+								.isAdjacent(new Position(stateView.getUnit(peasantID).getXPosition(),
+										stateView.getUnit(peasantID).getYPosition()))) {
+
+							System.out.println("/n/n i found this error /n/n");
+							Position desiredPos = desiredDestination.get(peasantID);
+							for (Position pos : desiredPos.getAdjacentPositions()) {
+
+								if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
+										&& !stateView.isResourceAt(pos.x, pos.y)) {
+									Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
+									sepiaAction.put(peasantID, moveAction);
+									return sepiaAction;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
