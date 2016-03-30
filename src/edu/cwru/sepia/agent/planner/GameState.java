@@ -219,10 +219,48 @@ public class GameState implements Comparable<GameState> {
 		else if (listChildren.size() == 3) {
 
 			System.out.println("hello");
+
+			for (GameState gamestate1 : listChildren.get(0)) {
+				for (GameState gamestate2 : listChildren.get(1)) {
+					for (GameState gamestate3 : listChildren.get(2)) {
+
+						if (gamestate1.getParentAction().get(0).getPeasant().getUnitID() == 0
+								&& gamestate2.getParentAction().get(0).getPeasant().getUnitID() == 1) {
+							GameState newChild = mergeState(gamestate1, gamestate2, gamestate3);
+							if (newChild != null) {
+								children.add(newChild);
+							}
+						} else {
+							GameState newChild = mergeState(gamestate1, gamestate2);
+							if (newChild != null) {
+								children.add(newChild);
+							}
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i < children.size(); i++) {
+				Position p1 = children.get(i).getPeasants().get(0).getPosition();
+				Position p2 = children.get(i).getPeasants().get(1).getPosition();
+
+				if (p1.x == p2.x && p1.y == p2.y) {
+
+					if (children.size() > 1) {
+						children.remove(i);
+						continue;
+					}
+				}
+			}
+
 		}
 
 		return children;
 
+	}
+
+	private GameState mergeState(GameState state1, GameState state2, GameState state3) {
+		return null;
 	}
 
 	private GameState mergeState(GameState state1, GameState state2) {
@@ -231,6 +269,10 @@ public class GameState implements Comparable<GameState> {
 		StripsAction action2 = state2.parentAction.get(0);
 		String action1Name = action1.getAction();
 		String action2Name = action2.getAction();
+
+		if (action1Name.equals(action2Name) && action1Name.equals("CREATE")) {
+			return null;
+		}
 
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
@@ -307,10 +349,7 @@ public class GameState implements Comparable<GameState> {
 
 							ArrayList<Forest> updateForest = new ArrayList<Forest>();
 							for (Forest forests : newForest) {
-								if (forests.getIsEmpty() != forest.getIsEmpty()
-										&& forests.getResourceQuantity() != forest.getResourceQuantity()
-										&& forests.getPosition().x != forest.getPosition().x
-										&& forests.getPosition().y != forest.getPosition().y) {
+								if (forests.getResourceQuantity() != 0) {
 									updateForest.add(forests);
 								}
 							}
@@ -343,10 +382,7 @@ public class GameState implements Comparable<GameState> {
 
 							ArrayList<GoldMine> updateGoldMine = new ArrayList<GoldMine>();
 							for (GoldMine goldmines : newGoldMine) {
-								if (goldmines.getIsEmpty() != goldmine.getIsEmpty()
-										&& goldmines.getResourceQuantity() != goldmine.getResourceQuantity()
-										&& goldmines.getPosition().x != goldmine.getPosition().x
-										&& goldmines.getPosition().y != goldmine.getPosition().y) {
+								if (goldmines.getResourceQuantity() != 0) {
 									updateGoldMine.add(goldmines);
 								}
 							}
