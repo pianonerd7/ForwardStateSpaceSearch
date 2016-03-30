@@ -304,8 +304,17 @@ public class GameState implements Comparable<GameState> {
 						// we don't consider it anymore
 						if (forest.getResourceQuantity() <= 0) {
 							ArrayList<Forest> newForest = newState.getForests();
-							newForest.remove(forest);
-							newState.setForests(newForest);
+
+							ArrayList<Forest> updateForest = new ArrayList<Forest>();
+							for (Forest forests : newForest) {
+								if (forests.getIsEmpty() != forest.getIsEmpty()
+										&& forests.getResourceQuantity() != forest.getResourceQuantity()
+										&& forests.getPosition().x != forest.getPosition().x
+										&& forests.getPosition().y != forest.getPosition().y) {
+									updateForest.add(forests);
+								}
+							}
+							newState.setForests(updateForest);
 						}
 
 						break;
@@ -331,8 +340,17 @@ public class GameState implements Comparable<GameState> {
 						// we don't consider it anymore
 						if (goldmine.getResourceQuantity() <= 0) {
 							ArrayList<GoldMine> newGoldMine = newState.getGoldMines();
-							newGoldMine.remove(goldmine);
-							newState.setGoldMines(newGoldMine);
+
+							ArrayList<GoldMine> updateGoldMine = new ArrayList<GoldMine>();
+							for (GoldMine goldmines : newGoldMine) {
+								if (goldmines.getIsEmpty() != goldmine.getIsEmpty()
+										&& goldmines.getResourceQuantity() != goldmine.getResourceQuantity()
+										&& goldmines.getPosition().x != goldmine.getPosition().x
+										&& goldmines.getPosition().y != goldmine.getPosition().y) {
+									updateGoldMine.add(goldmines);
+								}
+							}
+							newState.setGoldMines(updateGoldMine);
 						}
 
 						break;
@@ -354,6 +372,11 @@ public class GameState implements Comparable<GameState> {
 			break;
 
 		case ("CREATE"):
+
+			if (newState.getPeasants().size() == newState.getTotalFoodOnMap()) {
+				return null;
+			}
+
 			newState.setMyCost(newState.getMyCost() + 1);
 
 			ArrayList<Peasant> temp = state2.getPeasants();

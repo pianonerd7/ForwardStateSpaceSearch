@@ -24,6 +24,16 @@ public class Peasant extends MapObject {
 		this.unitID = unitID;
 	}
 
+	public Peasant(Peasant peasant) {
+		super(peasant.resourceQuantity == 0, "PEASANT", new Position(peasant.getPosition().x, peasant.getPosition().y));
+		this.holdingObject = peasant.getHoldingObject();
+		this.resourceQuantity = peasant.getResourceQuantity();
+		this.isNextToGoldMine = peasant.isNextToGoldMine();
+		this.isNextToForest = peasant.isNextToForest();
+		this.isNextToTownHall = peasant.isNextToTownHall();
+		this.unitID = peasant.getUnitID();
+	}
+
 	public ResourceType getHoldingObject() {
 		return holdingObject;
 	}

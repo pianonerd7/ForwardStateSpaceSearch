@@ -27,7 +27,7 @@ public class CreateAction implements StripsAction {
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
 
 		for (Peasant statePeasant : state.getPeasants()) {
-			newPeasants.add(statePeasant);
+			newPeasants.add(new Peasant(statePeasant));
 		}
 
 		for (Position pos : state.getTownHall().getPosition().getAdjacentPositions()) {
