@@ -379,18 +379,12 @@ public class GameState implements Comparable<GameState> {
 
 			newState.setMyCost(newState.getMyCost() + 1);
 
-			ArrayList<Peasant> temp = state2.getPeasants();
-			for (Peasant newP : newState.getPeasants()) {
-				for (int j = 0; j < temp.size(); j++) {
-					if (newP != null && newP.getUnitID() == temp.get(j).getUnitID()) {
-						temp.remove(j);
-					}
+			for (Peasant peasant : state2.getPeasants()) {
+				if (peasant.getUnitID() != newState.getPeasants().get(0).getUnitID()
+						&& peasant.getUnitID() != newState.getPeasants().get(1).getUnitID()) {
+					newState.getPeasants().add(peasant);
 				}
 			}
-			ArrayList<Peasant> peasants = newState.getPeasants();
-			peasants.add(temp.get(0));
-			newState.setPeasants(peasants);
-
 			break;
 		}
 
