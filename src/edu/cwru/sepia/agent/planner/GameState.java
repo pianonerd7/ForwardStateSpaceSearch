@@ -1111,16 +1111,9 @@ public class GameState implements Comparable<GameState> {
 					break;
 
 				case "CREATE":
-					// heuristic += ((goalWood - myWood) / 100) * 10;
-					// heuristic += ((goalGold - myGold) / 100) * 10;
+					heuristic += (goalWood - myWood) * 10;
+					heuristic += (goalGold - myGold) * 10;
 
-					if ((this.getTotalFoodOnMap() - this.getPeasants().size()) > 0) {
-						heuristic += 100;
-					}
-
-					if (this.getMyGold() >= 0) {
-						heuristic += 400;
-					}
 					break;
 				}
 				break;
