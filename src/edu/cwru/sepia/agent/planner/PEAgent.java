@@ -132,10 +132,10 @@ public class PEAgent extends Agent {
 						for (Position pos : desiredPos.getAdjacentPositions()) {
 
 							if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
-									&& !stateView.isResourceAt(pos.x, pos.y)) {
+									&& !stateView.isResourceAt(pos.x, pos.y) && !stateView.isUnitAt(pos.x, pos.y)) {
 								Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
 								sepiaAction.put(peasantID, moveAction);
-								return sepiaAction;
+								break;
 							}
 						}
 					} else if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEGATHER) {
@@ -147,7 +147,6 @@ public class PEAgent extends Agent {
 												.getDirection(this.desiredResource.get(peasantID)));
 
 						sepiaAction.put(peasantID, harvestAction);
-						return sepiaAction;
 
 					} else if (lastAction.get(peasantID).getAction().getType() == ActionType.PRIMITIVEDEPOSIT) {
 						System.out.println("DEPOSIT ERROR");
@@ -158,7 +157,6 @@ public class PEAgent extends Agent {
 												.getDirection(new Position(this.townHall.getXPosition(),
 														this.townHall.getYPosition())));
 						sepiaAction.put(peasantID, depositAction);
-						return sepiaAction;
 					}
 				} else if (lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED) {
 					if (lastAction.toString().contains("COMPOUNDMOVE")) {
@@ -171,16 +169,19 @@ public class PEAgent extends Agent {
 							for (Position pos : desiredPos.getAdjacentPositions()) {
 
 								if (pos.inBounds(stateView.getXExtent(), stateView.getYExtent())
-										&& !stateView.isResourceAt(pos.x, pos.y)) {
+										&& !stateView.isResourceAt(pos.x, pos.y) && !stateView.isUnitAt(pos.x, pos.y)) {
 									Action moveAction = Action.createCompoundMove(peasantID, pos.x, pos.y);
 									sepiaAction.put(peasantID, moveAction);
-									return sepiaAction;
+									break;
 								}
 							}
 						}
 					}
 				}
 			}
+		}
+		if (sepiaAction.size() > 0) {
+			return sepiaAction;
 		}
 
 		boolean isPrevActionComplete = true;

@@ -844,6 +844,8 @@ public class GameState implements Comparable<GameState> {
 					newState.getPeasants().add(peasant);
 				}
 			}
+
+			newState.setMyGold(newState.getMyGold() - 400);
 			break;
 		}
 
