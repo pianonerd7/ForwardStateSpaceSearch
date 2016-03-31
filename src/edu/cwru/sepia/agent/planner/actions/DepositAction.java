@@ -15,11 +15,17 @@ public class DepositAction implements StripsAction {
 		this.peasant = peasant;
 	}
 
+	/**
+	 * Checks to see if a deposit is possible for the passed in game state
+	 */
 	@Override
 	public boolean preconditionsMet(GameState state) {
 		return peasant.getResourceQuantity() > 0 && peasant.isNextToTownHall();
 	}
 
+	/**
+	 * Applies the deposit action on the passed in game state
+	 */
 	@Override
 	public GameState apply(GameState state) {
 
@@ -27,6 +33,8 @@ public class DepositAction implements StripsAction {
 		ResourceType resourceType = null;
 		int resourceQuantity = 0;
 
+		// resets the peasant's fields once a deposit is made. The peasant will
+		// no longer be holding a resource and will have a quantity of 0.
 		for (Peasant statePeasant : state.getPeasants()) {
 			if (statePeasant.getUnitID() != this.peasant.getUnitID()) {
 				newPeasants.add(statePeasant);
@@ -58,6 +66,7 @@ public class DepositAction implements StripsAction {
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
+		// Updates myWood and myGold by adding 100
 		if (resourceType.toString().equals("WOOD")) {
 			newState.setMyWood(newState.getMyWood() + resourceQuantity);
 		} else if (resourceType.toString().equals("GOLD")) {

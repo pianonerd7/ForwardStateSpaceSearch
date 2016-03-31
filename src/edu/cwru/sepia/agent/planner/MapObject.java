@@ -1,9 +1,15 @@
 package edu.cwru.sepia.agent.planner;
 
+/**
+ * All MapObjects (Peasant, TownHall, Forest, and GoldMine) extends MapObjects
+ * 
+ * @author Pianonerd77
+ *
+ */
 public abstract class MapObject {
 
 	private boolean isEmpty;
-	private String name;
+	private String name;// what kind of object are you? ie. PEASANT, FOREST etc.
 	private Position position;
 
 	public MapObject(boolean isEmpty, String name, Position position) {

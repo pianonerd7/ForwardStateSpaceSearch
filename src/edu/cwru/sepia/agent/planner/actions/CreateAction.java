@@ -15,12 +15,18 @@ public class CreateAction implements StripsAction {
 		this.creatorPeasant = creator;
 	}
 
+	/**
+	 * Checks to see if the state passed in is capable of creating a new peasant
+	 */
 	@Override
 	public boolean preconditionsMet(GameState state) {
 		return state.isBuildPeasants() && state.getMyGold() >= 400
 				&& ((state.getTotalFoodOnMap() - state.getPeasants().size()) > 0);
 	}
 
+	/**
+	 * Creates a new peasant in the state passed in
+	 */
 	@Override
 	public GameState apply(GameState state) {
 
@@ -30,6 +36,8 @@ public class CreateAction implements StripsAction {
 			newPeasants.add(new Peasant(statePeasant));
 		}
 
+		// Puts the peasant at a location. This is approximate since we won't
+		// know where SEPIA places the peasant
 		for (Position pos : state.getTownHall().getPosition().getAdjacentPositions()) {
 
 			if (pos.inBounds(state.getState().getXExtent(), state.getState().getYExtent())
@@ -47,6 +55,7 @@ public class CreateAction implements StripsAction {
 				state.getPlayerNum(), state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(),
 				state.isBuildPeasants(), state.getTotalFoodOnMap());
 
+		// Creating a peasant costs 400 gold, so we deduct
 		newState.setMyGold(newState.getMyGold() - 400);
 		return newState;
 	}
@@ -57,7 +66,7 @@ public class CreateAction implements StripsAction {
 	}
 
 	public String toString() {
-		return "[PeasantID: " + this.creatorPeasant.getUnitID() + "BUILDING A PEASANT WITH ID: "
+		return "[ PEASANT ID: " + this.creatorPeasant.getUnitID() + " BUILDING A PEASANT WITH ID: "
 				+ createdPeasant.getUnitID() + "] \n";
 	}
 

@@ -57,7 +57,7 @@ public class PlannerAgent extends Agent {
 		}
 
 		// write the plan to a text file
-		// savePlan(plan);
+		savePlan(plan);
 
 		// Instantiates the PEAgent with the specified plan.
 		peAgent = new PEAgent(playernum, plan);
@@ -134,6 +134,13 @@ public class PlannerAgent extends Agent {
 		return null;
 	}
 
+	/**
+	 * Checks to see whether the utility of a node is good enough
+	 * 
+	 * @param neighbor
+	 * @param openList
+	 * @return
+	 */
 	private boolean canAddToOpenList(GameState neighbor, ArrayList<GameState> openList) {
 
 		for (GameState node : openList) {
@@ -145,14 +152,18 @@ public class PlannerAgent extends Agent {
 		return true;
 	}
 
+	/**
+	 * Based on the last child, we can back track based on the parent action
+	 * 
+	 * @param child
+	 * @return
+	 */
 	private Stack<StripsAction> getPath(GameState child) {
 
 		Stack<StripsAction> actions = new Stack<StripsAction>();
 
 		while (child != null) {
 			if (child.getParentAction() != null) {
-				System.out.println(child.getParentAction().toString());
-
 				for (StripsAction action : child.getParentAction()) {
 					actions.add(action);
 				}

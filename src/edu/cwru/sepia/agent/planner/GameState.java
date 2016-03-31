@@ -86,6 +86,7 @@ public class GameState implements Comparable<GameState> {
 		forests = new ArrayList<Forest>();
 		goldMines = new ArrayList<GoldMine>();
 
+		// extracts the resources from the state
 		for (ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
 
 			if (resource.getType().toString().equals("TREE")) {
@@ -102,6 +103,7 @@ public class GameState implements Comparable<GameState> {
 			}
 		}
 
+		// extracts the units from the state
 		for (Unit.UnitView unit : state.getAllUnits()) {
 			if (unit.getTemplateView().getName().toLowerCase().equals("peasant")) {
 				this.peasants.add(new Peasant(null, 0, new Position(unit.getXPosition(), unit.getYPosition()),
@@ -175,6 +177,13 @@ public class GameState implements Comparable<GameState> {
 		return mergeChildren(prelimaryChildren);
 	}
 
+	/**
+	 * Once when there are more than 2 parent actions, we need to merge the
+	 * children
+	 * 
+	 * @param listChildren
+	 * @return
+	 */
 	private List<GameState> mergeChildren(List<ArrayList<GameState>> listChildren) {
 
 		if (listChildren.size() == 1) {
@@ -199,6 +208,8 @@ public class GameState implements Comparable<GameState> {
 				Position p1 = children.get(i).getPeasants().get(0).getPosition();
 				Position p2 = children.get(i).getPeasants().get(1).getPosition();
 
+				// to avoid SEPIA collision (which is full of bugs) we avoid
+				// trying to go to the same place
 				if (p1.x == p2.x && p1.y == p2.y) {
 
 					if (children.size() > 1) {
@@ -226,6 +237,7 @@ public class GameState implements Comparable<GameState> {
 				Position p2 = children.get(i).getPeasants().get(1).getPosition();
 				Position p3 = children.get(i).getPeasants().get(2).getPosition();
 
+				// To avoid collision, avoid going to the same place
 				if ((p1.x == p2.x && p1.y == p2.y) || (p1.x == p3.x && p1.y == p3.y)
 						|| (p3.x == p2.x && p3.y == p2.y)) {
 
@@ -240,6 +252,19 @@ public class GameState implements Comparable<GameState> {
 
 	}
 
+	/**
+	 * If action1 is to harvest from resource x, and action 2 and or action 3
+	 * moves towards that resource (to harvest eventually), we need to make sure
+	 * that resource has enough for 3 peasants
+	 * 
+	 * @param action1Name
+	 * @param action2Name
+	 * @param action3Name
+	 * @param action1
+	 * @param action2
+	 * @param action3
+	 * @return
+	 */
 	private boolean collisionCheck(String action1Name, String action2Name, String action3Name, StripsAction action1,
 			StripsAction action2, StripsAction action3) {
 
@@ -437,6 +462,14 @@ public class GameState implements Comparable<GameState> {
 		return false;
 	}
 
+	/**
+	 * Merging the state of 3 actions into one.
+	 * 
+	 * @param state1
+	 * @param state2
+	 * @param state3
+	 * @return
+	 */
 	private GameState mergeState(GameState state1, GameState state2, GameState state3) {
 		StripsAction action1 = state1.parentAction.get(0);
 		StripsAction action2 = state2.parentAction.get(0);
@@ -680,6 +713,13 @@ public class GameState implements Comparable<GameState> {
 		return newState;
 	}
 
+	/**
+	 * Merging the state of 2 actions into 1
+	 * 
+	 * @param state1
+	 * @param state2
+	 * @return
+	 */
 	private GameState mergeState(GameState state1, GameState state2) {
 
 		StripsAction action1 = state1.parentAction.get(0);
@@ -690,12 +730,6 @@ public class GameState implements Comparable<GameState> {
 		if (action1Name.equals(action2Name) && action1Name.equals("CREATE")) {
 			return null;
 		}
-
-		// if (action1Name.toString().equals("CREATE")) {
-		// return state1;
-		// } else if (action2Name.toString().equals("CREATE")) {
-		// return state2;
-		// }
 
 		Peasant peasant1 = null;
 		Peasant peasant2 = null;
@@ -721,7 +755,6 @@ public class GameState implements Comparable<GameState> {
 			if (peasant.getUnitID() == action2.getPeasant().getUnitID()) {
 				peasant2 = peasant;
 			}
-
 		}
 
 		for (Forest forest : state1.getForests()) {
@@ -852,6 +885,12 @@ public class GameState implements Comparable<GameState> {
 		return newState;
 	}
 
+	/**
+	 * Gets all possible children of a peasant
+	 * 
+	 * @param peasant
+	 * @return
+	 */
 	private ArrayList<GameState> getChildren(Peasant peasant) {
 
 		ArrayList<GameState> children = new ArrayList<GameState>();
@@ -1033,6 +1072,18 @@ public class GameState implements Comparable<GameState> {
 
 	}
 
+	/**
+	 * The heuristic such that it prioritizes getting gold first since we need
+	 * gold to build peasants and it is more advantageous to build peasants
+	 * early on than later.
+	 * 
+	 * Also punishes the peasant if it tries to get more gold if we have already
+	 * reached gold's goal. Likewise for wood.
+	 * 
+	 * @param parentAction
+	 * @param ancestorsAction
+	 * @return
+	 */
 	private double heuristicPerPeasant(StripsAction parentAction, StripsAction ancestorsAction) {
 
 		double heuristic = 0;
@@ -1168,7 +1219,6 @@ public class GameState implements Comparable<GameState> {
 	 */
 	public double getCost() {
 		return this.myCost + heuristic();
-		// return this.cost;
 	}
 
 	/**

@@ -54,5 +54,10 @@ public interface StripsAction {
 	 */
 	public String getAction();
 
+	/**
+	 * Gets the peasant involved in the action
+	 * 
+	 * @return
+	 */
 	public Peasant getPeasant();
 }

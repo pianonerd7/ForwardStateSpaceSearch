@@ -29,6 +29,9 @@ public class MoveAction implements StripsAction {
 		return true;
 	}
 
+	/**
+	 * Applies the move action to the game state and returns that state
+	 */
 	@Override
 	public GameState apply(GameState state) {
 

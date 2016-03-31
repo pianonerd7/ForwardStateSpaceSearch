@@ -1,5 +1,12 @@
 package edu.cwru.sepia.agent.planner;
 
+/**
+ * Represents forests on the map. It has a location (super) and a quantity of
+ * how much wood it has
+ * 
+ * @author Anna He
+ *
+ */
 public class Forest extends MapObject {
 
 	private int resourceQuantity;

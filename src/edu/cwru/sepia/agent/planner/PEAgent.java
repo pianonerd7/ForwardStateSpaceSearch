@@ -121,6 +121,7 @@ public class PEAgent extends Agent {
 
 		Map<Integer, Action> sepiaAction = new HashMap<Integer, Action>();
 
+		// I needed to add this part because SEPIA doesn't handle collision
 		for (Integer key : lastAction.keySet()) {
 			int peasantID = key;
 
@@ -158,6 +159,9 @@ public class PEAgent extends Agent {
 														this.townHall.getYPosition())));
 						sepiaAction.put(peasantID, depositAction);
 					}
+					// I needed to add this because there is a bug in SEPIA
+					// where even though a move failed, it says that it is
+					// complete
 				} else if (lastAction.get(peasantID).getFeedback() == ActionFeedback.COMPLETED) {
 					if (lastAction.toString().contains("COMPOUNDMOVE")) {
 						if (!this.desiredDestination.get(peasantID)
@@ -218,6 +222,12 @@ public class PEAgent extends Agent {
 		return sepiaAction;
 	}
 
+	/**
+	 * Checks to see if a peasant is created, and if it is we pair the strips
+	 * unit ID with its actual ID
+	 * 
+	 * @param stateView
+	 */
 	private void checkCreatePeasant(State.StateView stateView) {
 		for (int unitId : stateView.getUnitIds(playernum)) {
 			Unit.UnitView unit = stateView.getUnit(unitId);
@@ -285,6 +295,12 @@ public class PEAgent extends Agent {
 		}
 	}
 
+	/**
+	 * Get the peasant id based on the action
+	 * 
+	 * @param action
+	 * @return
+	 */
 	private int getPeasantID(StripsAction action) {
 
 		switch (action.getAction()) {

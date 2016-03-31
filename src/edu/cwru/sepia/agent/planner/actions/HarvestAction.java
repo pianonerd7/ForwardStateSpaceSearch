@@ -20,18 +20,29 @@ public class HarvestAction implements StripsAction {
 		this.resource = resource;
 	}
 
+	/**
+	 * Checks to see if the peasant is able to harvest in the passed in game
+	 * state
+	 */
 	@Override
 	public boolean preconditionsMet(GameState state) {
 		return resource.getPosition().isAdjacent(peasant.getPosition())
 				&& (peasant.isNextToGoldMine() || peasant.isNextToForest()) && peasant.getIsEmpty();
 	}
 
+	/**
+	 * Applies the harvest action to the passed in game state
+	 */
 	@Override
 	public GameState apply(GameState state) {
 
 		Position resourcePos = resource.getPosition();
 		ArrayList<Peasant> newPeasants = new ArrayList<Peasant>();
 
+		/**
+		 * Finds the peasant that is to carry out the harvest action and changes
+		 * the resource type its holding and the quantity
+		 */
 		for (Peasant statePeasant : state.getPeasants()) {
 			if (statePeasant.getUnitID() != this.peasant.getUnitID()) {
 				newPeasants.add(statePeasant);
@@ -57,6 +68,7 @@ public class HarvestAction implements StripsAction {
 			}
 		}
 
+		// clones the forests
 		ArrayList<Forest> newForests = new ArrayList<Forest>();
 
 		for (Forest forest : state.getForests()) {
@@ -66,6 +78,7 @@ public class HarvestAction implements StripsAction {
 			newForests.add(newForest);
 		}
 
+		// clones the goldmines
 		ArrayList<GoldMine> newGoldMines = new ArrayList<GoldMine>();
 
 		for (GoldMine goldmine : state.getGoldMines()) {
@@ -82,6 +95,8 @@ public class HarvestAction implements StripsAction {
 				state.getState(), 1, state.getTotalWoodOnMap(), state.getTotalGoldOnMap(), state.isBuildPeasants(),
 				state.getTotalFoodOnMap());
 
+		// if we are harvesting from a forest, we want to deduct 100 from the
+		// resource
 		if (resource.getName().equals("FOREST")) {
 			for (Forest forest : newState.getForests()) {
 				if (forest.getPosition().x == resourcePos.x && forest.getPosition().y == resourcePos.y) {
@@ -101,6 +116,8 @@ public class HarvestAction implements StripsAction {
 			}
 		}
 
+		// if we are harvesting from a goldmine, we want to deduct 100 from the
+		// resource
 		else if (resource.getName().equals("GOLDMINE")) {
 			for (GoldMine goldmine : newState.getGoldMines()) {
 				if (goldmine.getPosition().x == resourcePos.x && goldmine.getPosition().y == resourcePos.y) {

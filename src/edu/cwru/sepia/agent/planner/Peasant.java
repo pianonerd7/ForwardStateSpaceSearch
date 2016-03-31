@@ -2,6 +2,13 @@ package edu.cwru.sepia.agent.planner;
 
 import edu.cwru.sepia.environment.model.state.ResourceType;
 
+/**
+ * Represents peasants on the map. It includes what resource it is holding, how
+ * much of a resource it is holding, and facts about where it is on the map
+ * 
+ * @author Anna He
+ *
+ */
 public class Peasant extends MapObject {
 
 	private ResourceType holdingObject;
